@@ -1,0 +1,20 @@
+services:
+  app:
+    build: ./app
+    ports:
+      - 3000:3000
+    volumes:
+      - ./app:/usr/local/src
+      - app_node_modules:/usr/local/src/node_modules
+
+  mysql:
+    image: mysql:8
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./mysql:/var/lib/mysql
+
+volumes:
+  app_node_modules:
