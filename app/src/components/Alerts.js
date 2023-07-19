@@ -5,6 +5,13 @@ function createAlert(message, severity = 'error') {
   return { id: Date.now(), message, severity }
 }
 
+function setCreateAlert([alerts, setAlerts], message, severity) {
+  const newAlert = createAlert(message, severity)
+  if (!alerts.some(alert => alert.message == newAlert.message)) {
+    setAlerts([...alerts, newAlert])
+  }
+}
+
 function Alerts(props) {
   const alerts = props.alerts || []
   const timeout = props.timeout || 5000
@@ -13,7 +20,7 @@ function Alerts(props) {
   useEffect(() => {
     if (alerts.length) {
       const timer = setTimeout(() => onAlerted(alerts[0].id), timeout)
-      return clearTimeout.bind(this, timer)
+      return () => clearTimeout(timer)
     }
   }, [alerts])
 
@@ -22,4 +29,5 @@ function Alerts(props) {
   })
 }
 
-export { Alerts, createAlert }
+export default Alerts
+export { createAlert, setCreateAlert }

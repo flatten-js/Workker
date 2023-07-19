@@ -10,17 +10,13 @@ import {
   DialogContentText, 
   DialogActions, 
   Button,
-  Skeleton,
-  Box
+  Skeleton
 } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 
-import Layout from "../Layout"
-import Map from '../components/Map'
-import Stamp from '../components/Stamp'
-import { createAlert } from '../components/Alerts'
-
-import { getProject, getMarkers, createStamp } from '../store'
+import Layout from "@@/Layout"
+import { Map, Stamp, setCreateAlert as _setCreateAlert } from '@@/components'
+import { getProject, getMarkers, createStamp } from '@@/store'
 
 let mounted = false
 function Pilgrimage() {
@@ -32,15 +28,14 @@ function Pilgrimage() {
   const [position, setPosition] = useState(null)
   const [dialog, setDialog] = useState({})
 
-  function setCreateAlert(message, severity) {
-    const newAlert = createAlert(message, severity)
-    if (!alerts.some(alert => alert.message == newAlert.message)) {
-      setAlerts([...alerts, newAlert])
-    }
-  }
-
   const theme = useTheme()
 
+  const setCreateAlert = _setCreateAlert.bind(this, [alerts, setAlerts])
+  
+  function onAlerted(id) {
+    setAlerts(alerts.filter(alert => alert.id != id))
+  }
+  
   async function fetch() {
     try {
       const project = await getProject(project_id)
@@ -71,10 +66,6 @@ function Pilgrimage() {
   useEffect(() => {
     if (!mounted) onMounted()
   }, [])
-
-  function onAlerted(id) {
-    setAlerts(alerts.filter(alert => alert.id != id))
-  }
 
   function onDialogClose() {
     setDialog({})
@@ -148,7 +139,7 @@ function Pilgrimage() {
                             title={ marker.title } 
                             icon={ marker.stamp_icon } 
                             success={ !!marker.Stamps.length }
-                            onStampPush={ onStampPushHandler.bind(this, marker.id) }
+                            onStampPush={ () => onStampPushHandler(marker.id) }
                             loaded
                           />
                         </Grid>

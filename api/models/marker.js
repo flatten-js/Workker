@@ -10,7 +10,8 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Marker.hasMany(models.Stamp, { foreignKey: 'marker_id' })
+      Marker.belongsTo(models.Project)
+      models.Project.hasMany(Marker, { foreignKey: 'project_id' })
     }
   }
   Marker.init({

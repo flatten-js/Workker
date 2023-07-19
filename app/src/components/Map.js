@@ -3,6 +3,7 @@ import { Skeleton } from '@mui/material'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import 'leaflet-sprite/dist/leaflet.sprite.js'
+
 L.Icon.Default.imagePath = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/'
 
 function Map(props) {

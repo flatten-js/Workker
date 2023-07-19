@@ -25,6 +25,8 @@ services:
     build: ./app
     ports:
       - 3000:3000
+    environment:
+      - DANGEROUSLY_DISABLE_HOST_CHECK=true
     volumes:
       - ./app:/usr/local/src
       - app_node_modules:/usr/local/src/node_modules
@@ -41,7 +43,31 @@ services:
       MYSQL_DATABASE: waylap
       MYSQL_ALLOW_EMPTY_PASSWORD: 1
     volumes:
-      - ./mysql:/var/lib/mysql
+      - ./data/mysql:/var/lib/mysql
+  
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.10
+    command: /bin/bash -c "/usr/share/elasticsearch/data/init.sh & /usr/local/bin/docker-entrypoint.sh"
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512M -Xmx512M"
+    ulimits:
+        memlock:
+          soft: -1
+          hard: -1
+    volumes:
+      - ./data/elasticsearch:/usr/share/elasticsearch/data
+    restart: always
+  
+  # kibana:
+  #   image: docker.elastic.co/kibana/kibana:7.17.10
+  #   ports:
+  #     - 5601:5601
+  #   environment:
+  #     - ELASTICSEARCH_URL=http://elasticsearch:9200
+  #   depends_on:
+  #     - elasticsearch
+
 
 volumes:
   app_node_modules:
