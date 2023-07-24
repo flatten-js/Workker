@@ -1,4 +1,4 @@
-const { UserRate, Rate } = require('./models')
+const { UserRate, Rate } = require('###/models')
 
 const user_id = 1
 

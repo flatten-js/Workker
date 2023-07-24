@@ -14,34 +14,32 @@ import {
 } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 
-import Layout from "@@/Layout"
-import { Map, Stamp, setCreateAlert as _setCreateAlert } from '@@/components'
+import UserTemplate from "@@/templates/UserTemplate"
+import { Map, Stamp } from '@@/components'
 import { getProject, getMarkers, createStamp } from '@@/store'
+import useAlerts from '@@/hooks/useAlerts'
 
 let mounted = false
-function Pilgrimage() {
+function Project() {
   const { id: project_id } = useParams() 
 
-  const [alerts, setAlerts] = useState([])
   const [project, setProject] = useState({})
   const [markers, setMarkers] = useState([])
   const [position, setPosition] = useState(null)
   const [dialog, setDialog] = useState({})
 
-  const theme = useTheme()
+  const [alerts, { setCreateAlert }] = useAlerts()
 
-  const setCreateAlert = _setCreateAlert.bind(this, [alerts, setAlerts])
-  
-  function onAlerted(id) {
-    setAlerts(alerts.filter(alert => alert.id != id))
-  }
+  const theme = useTheme()
   
   async function fetch() {
     try {
       const project = await getProject(project_id)
-      const markers = await getMarkers(project_id)
-      setProject(project)
-      setMarkers(markers)
+      if (project) {
+        const markers = await getMarkers(project_id)
+        setProject(project)
+        setMarkers(markers)
+      }
     } catch (e) {
       setCreateAlert('Failed to load data.')
     }
@@ -99,7 +97,7 @@ function Pilgrimage() {
     const isSuccess = calculateDistance(marker.position, position) <= (marker.radius || project.radius)
     if (isSuccess) {
       try {
-        await createStamp(marker.id, 1)
+        await createStamp(marker.id)
         marker.Stamps = [{}]; setMarkers(markers)
         setDialog(marker)
       } catch (e) {
@@ -111,7 +109,7 @@ function Pilgrimage() {
   }
 
   return (
-    <Layout alerts={ alerts } onAlerted={ onAlerted }>
+    <UserTemplate alerts={ alerts }>
       <Grid container sx={{ height: '100vh' }}>
         <Paper sx={{ width: '100%', minHeight: '100%', p: 4 }}>
           <Grid container spacing={2} sx={{ height: '100%' }}>
@@ -167,8 +165,8 @@ function Pilgrimage() {
           <Button onClick={ onDialogClose }>OK</Button>
         </DialogActions>
       </Dialog>
-    </Layout>
+    </UserTemplate>
   )
 }
 
-export default Pilgrimage
+export default Project

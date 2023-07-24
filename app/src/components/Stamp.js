@@ -41,7 +41,7 @@ function Stamp(props) {
         <Box sx={{ p: 2 }}>
           <Avatar 
             className={ success ? 'success' : '' } 
-            sx={{ filter: 'grayscale(100%)', width: '100%', height: 'auto'}} 
+            sx={{ filter: 'grayscale(100%)', width: '100%', height: 'auto' }} 
             src={ icon } 
             onClick={ onStampPush }
           />

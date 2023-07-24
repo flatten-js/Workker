@@ -37,7 +37,19 @@ function Pop(props) {
           ? (
             <>
               <Typography variant="h6" component="div">{ title }</Typography>
-              <Typography variant="body2" color="text.secondary">{ description }</Typography>
+              <Typography 
+                variant="body2" 
+                color="text.secondary" 
+                sx={{ 
+                  height: ({ typography: { body2 } }) => `calc(${body2.lineHeight} * ${body2.fontSize} * 2)`,
+                  display: "-webkit-box",
+                  WebkitBoxOrient: "vertical",
+                  WebkitLineClamp: 2,
+                  overflow: "hidden"
+                }}
+              >
+                { description }
+              </Typography>
             </>
           )
           : (

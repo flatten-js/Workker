@@ -14,10 +14,12 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Project.init({
+    user_id: DataTypes.INTEGER,
     title: DataTypes.STRING,
     description: DataTypes.STRING,
     image: DataTypes.STRING,
-    radius: DataTypes.FLOAT
+    radius: DataTypes.FLOAT,
+    public: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Project',

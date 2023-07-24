@@ -3,9 +3,13 @@ require('dotenv').config()
 const express = require('express')
 const app = express()
 
-app.use(express.json())
+const cookieParser = require('cookie-parser')
 
-app.use('/api', require('./routes/api.js'))
+app.use(express.json())
+app.use(cookieParser())
+
+app.use('/api', require('./routes/api'))
+app.use('/auth', require('./routes/auth'))
 
 app.use((err, req, res, next) => {
   console.error(err)

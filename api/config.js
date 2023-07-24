@@ -1,0 +1,11 @@
+const GCP_PLACE_APIKEY = process.env.GCP_PLACE_APIKEY
+const PASSWORD_SALT_ROUNDS = Number(process.env.PASSWORD_SALT_ROUNDS)
+const JWT_SECRET = process.env.JWT_SECRET
+const TOKEN_COOKIE_NAME = process.env.TOKEN_COOKIE_NAME || 'jwt_token'
+
+module.exports = {
+  GCP_PLACE_APIKEY,
+  PASSWORD_SALT_ROUNDS,
+  JWT_SECRET,
+  TOKEN_COOKIE_NAME
+}

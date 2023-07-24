@@ -1,11 +1,12 @@
 const axios = require('axios')
 
+const { GCP_PLACE_APIKEY } = require('../config')
 const { sleep } = require('../utils.js')
 
 const place = axios.create({
   baseURL: 'https://maps.googleapis.com/maps/api/place',
   params: {
-    key: process.env.GCP_PLACE_APIKEY,
+    key: GCP_PLACE_APIKEY,
     language: 'ja'
   }
 })

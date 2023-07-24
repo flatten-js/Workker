@@ -1,5 +1,7 @@
 'use strict';
 
+const { hash_password } = require('##/utils.js')
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
@@ -13,7 +15,7 @@ module.exports = {
      * }], {});
     */
     await queryInterface.bulkInsert('users', [
-      { id: 1, name: 'developer' }
+      { id: 1, email: 'developer@example.com', password: await hash_password('p@ssw0rd') }
     ])
   },
 
