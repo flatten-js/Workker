@@ -30,8 +30,8 @@ function useAlerts(timeout) {
 
   useEffect(() => {
     if (alerts.length) {
-      setTimeout(() => alerted(alerts[0].id), timeout)
-      return () => {}
+      const timer = setTimeout(() => alerted(alerts[0].id), timeout)
+      return () => clearTimeout(timer)
     }
   }, [alerts])
 

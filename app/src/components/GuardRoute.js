@@ -4,6 +4,8 @@ import { useState } from 'react'
 
 import { Navigate, Outlet } from 'react-router-dom'
 
+import { authenticate } from '@@/store'
+
 function GuardRoute(props) {
   const guest = !!props.guest
   const user = !!props.user
@@ -14,7 +16,7 @@ function GuardRoute(props) {
 
   ;(async () => {
     try {
-      await axios.get('/auth/authenticate')
+      await authenticate()
       setIsAuthenticated(true)
     } catch (e) {
       setIsAuthenticated(false)

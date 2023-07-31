@@ -5,9 +5,10 @@ import { useForm } from 'react-hook-form'
 
 import { Grid, Typography } from '@mui/material'
 
-import GuestTemplate from '@@/templates/GuestTemplate'
+import Template from '@@/templates/Template'
 import useAlerts from '@@/hooks/useAlerts'
 import { Sign } from '@@/components'
+import { signIn, signUp } from '@@/store'
 
 
 function Signxx(props) {
@@ -20,7 +21,7 @@ function Signxx(props) {
 
   async function signin(data) {
     try {
-      await axios.post('/auth/signin', data)
+      await signIn(data)
       navigate('/')
     } catch (e) {
       setCreateErrorAlert(e)
@@ -29,7 +30,7 @@ function Signxx(props) {
 
   async function signup(data) {
     try {
-      await axios.post('/auth/signup', data)
+      await signUp(data)
       navigate('/')
     } catch (e) {
       setCreateErrorAlert(e)
@@ -37,7 +38,7 @@ function Signxx(props) {
   }
 
   return (
-    <GuestTemplate alerts={ alerts }>
+    <Template alerts={ alerts }>
       <Grid container sx={{ width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
         <Grid item xs={12} md={6}>
           {
@@ -56,7 +57,7 @@ function Signxx(props) {
           }
         </Grid>
       </Grid>
-    </GuestTemplate>
+    </Template>
   )
 }
 

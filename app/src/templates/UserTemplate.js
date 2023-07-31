@@ -19,7 +19,8 @@ import { Menu as MenuIcon } from '@mui/icons-material'
 
 import useAlerts from '@@/hooks/useAlerts'
 
-import Layout from '@@/Layout'
+import Template from './Template'
+import { signOut } from '@@/store'
 
 
 function UserTemplate(props) {
@@ -47,7 +48,7 @@ function UserTemplate(props) {
 
   async function signout() {
     try {
-      await axios.post('/auth/signout')
+      await signOut()
       navigate('/signin')
     } catch (e) {
       setCreateErrorAlert(e)
@@ -55,7 +56,7 @@ function UserTemplate(props) {
   }
 
   return (
-    <Layout alerts={ alerts }>
+    <Template alerts={ alerts }>
       <Grid container spacing={4}>
         {/* Nav */}
 
@@ -118,7 +119,7 @@ function UserTemplate(props) {
           { props.children }
         </Grid>
       </Grid>    
-    </Layout>
+    </Template>
   )
 }
 

@@ -84,4 +84,21 @@ router.post('/generate', authenticate, router_handler(async (req, res) => {
 	return res.status(500).send('No spots were found in the vicinity.')
 }))
 
+router.post('/delete', authenticate, router_handler(async (req, res) => {
+	const project = await Project.findOne({ 
+		where: { 
+			id: req.body.project_id, 
+			user_id: req.decoded.user_id 
+		} 
+	})
+
+	if (project) {
+		await project.destroy()
+	} else {
+		throw new Error('An invalid project ID was specified')
+	}
+
+	res.json({})
+}))
+
 module.exports = router

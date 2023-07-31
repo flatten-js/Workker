@@ -16,7 +16,7 @@ const theme = createTheme({
 })
 
 
-function Layout(props) {
+function Template(props) {
   const { alerts } = props
 
   return (
@@ -39,12 +39,12 @@ function Layout(props) {
   )
 }
 
-Layout.propTypes = {
+Template.propTypes = {
   alerts: PropTypes.array
 }
 
-Layout.defaultProps = {
+Template.defaultProps = {
   alerts: []
 }
 
-export default Layout
+export default Template

@@ -11,17 +11,23 @@ import {
   DialogContentText,
   DialogActions,
   TextField,
-  Stack 
+  Stack,
+  IconButton,
+  Menu,
+  MenuItem
 } from '@mui/material'
-import { ScienceSharp } from '@mui/icons-material'
+import { ScienceSharp, MoreVert } from '@mui/icons-material'
 
 import UserTemplate from "@@/templates/UserTemplate"
 import { Pop, FormItem } from '@@/components'
 import { getProjectUserId, generateProject } from '@@/store'
 import useAlerts from '@@/hooks/useAlerts'
+import { deleteProject as storeDeleteProject } from '@@/store'
 
 let mounted = false
 function Account() {
+  const [anchorEl, setAnchorEl] = useState(null)
+  const [project, setProject] = useState(null)
   const [projects, setProjects] = useState([])
   const [isGenerate, setIsGenerate] = useState(false)
   const [generating, setGenerating] = useState(false)
@@ -77,6 +83,27 @@ function Account() {
     }
   }
 
+  function menuOpen(e, project) {
+    setAnchorEl(e.currentTarget)
+    setProject(project)
+  }
+
+  async function deleteProject() {
+    try {
+      await storeDeleteProject(project.id)
+      setProject(null)
+
+      await fetch()
+      setCreateAlert(`Project (${project.title}) deleted`, 'success')
+    } catch (e) {
+      setCreateErrorAlert(e)
+    }
+  }
+
+  function menuClose() {
+    setProject(null)
+  }
+
   return (
     <>
       <UserTemplate alerts={ alerts }>
@@ -90,7 +117,15 @@ function Account() {
             ? (
               projects.map(project => {
                 return (
-                  <Grid item xs={12} sm={6} md={4} lg={3} key={ project.id }>
+                  <Grid 
+                    item 
+                    key={ project.id }
+                    xs={12} 
+                    sm={6} 
+                    md={4} 
+                    lg={3}
+                    sx={{ position: 'relative' }}
+                  >
                     <Pop 
                       id={ project.id } 
                       title={ project.title } 
@@ -98,6 +133,12 @@ function Account() {
                       image={ project.image }
                       loaded
                     />
+                    <IconButton 
+                      sx={{ position: 'absolute', top: '1rem', right: 0 }}
+                      onClick={ e => menuOpen(e, project) }
+                    >
+                      <MoreVert />
+                    </IconButton>
                   </Grid>
                 )
               })
@@ -110,6 +151,16 @@ function Account() {
           }
         </Grid>
       </UserTemplate> 
+
+      <Menu 
+        anchorEl={ anchorEl }
+        open={ !!project }
+        onClose={ menuClose }
+      >
+        <MenuItem onClick={ deleteProject }>
+          Delete
+        </MenuItem>
+      </Menu>
 
       <Dialog open={ isGenerate } maxWidth="sm">
         <DialogTitle>
