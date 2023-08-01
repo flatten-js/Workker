@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import PropTypes from 'prop-types'
 
-import { 
+import {
+  Container,
   Grid, 
   AppBar, 
   Toolbar, 
@@ -13,13 +14,17 @@ import {
   Menu,
   MenuItem,
   Divider,
-  Box
+  Box,
+  List,
+  ListSubheader,
+  Drawer
 } from '@mui/material'
 import { Menu as MenuIcon } from '@mui/icons-material'
 
 import useAlerts from '@@/hooks/useAlerts'
 
 import Template from './Template'
+import { ListLinkItem } from '@@/components'
 import { signOut } from '@@/store'
 
 
@@ -28,6 +33,7 @@ function UserTemplate(props) {
 
   const [anchorEl, setAnchorEl] = useState(null)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isNav, setIsNav] = useState(false)
 
   const [_alerts, { setCreateErrorAlert }] = useAlerts()
 
@@ -55,12 +61,48 @@ function UserTemplate(props) {
     }
   }
 
-  return (
-    <Template alerts={ alerts }>
-      <Grid container spacing={4}>
-        {/* Nav */}
+  function switchNav() {
+    setIsNav(!isNav)
+  }
 
-        <Grid item xs={12}>
+  const drawer = (
+    <List subheader={ <ListSubheader>Pages</ListSubheader> }>
+      <ListLinkItem to="/">Home</ListLinkItem>
+    </List>
+  )
+
+  return (
+    <Template manual alerts={ alerts }>
+      <Grid container>
+        <Drawer
+          variant="temporary"
+          open={ isNav }
+          onClose={ switchNav }
+          ModalProps={{ keepMounted: true }}
+          sx={{ 
+            display: { xs: 'block', lg: 'none' },
+            width: '55vw',
+            '& .MuiDrawer-paper': { position: 'static', width: '100%', height: '100vh' }
+          }}
+        >
+          { drawer }
+        </Drawer>
+
+        <Grid item xs={2} sx={{ display: { xs: 'none', lg: 'block' } }}>
+          <Drawer
+            variant="permanent"
+            open
+            sx={{
+              position: 'sticky', 
+              top: 0, 
+              '& .MuiDrawer-paper': { position: 'static', width: '100%', height: '100vh' }
+            }}
+          >
+            { drawer }
+          </Drawer>
+        </Grid>
+        
+        <Grid item xs={12} lg={10} sx={{ px: 2, py: 1 }}>
           <AppBar 
             position="sticky" 
             color="transparent" 
@@ -68,9 +110,14 @@ function UserTemplate(props) {
             sx={{ mb: 4 }}
           >
             <Toolbar sx={{ p: '0!important', display: 'flex', justifyContent: 'space-between' }}>
-              <IconButton disabled>
-                <MenuIcon />
-              </IconButton>
+              <Box>
+                <IconButton 
+                  sx={{ display: { xs: 'block', lg: 'none' } }} 
+                  onClick={ switchNav }
+                >
+                  <MenuIcon />
+                </IconButton>
+              </Box>
 
               <Box>
                 <Button 
@@ -116,7 +163,10 @@ function UserTemplate(props) {
             </Toolbar>
           </AppBar>
 
-          { props.children }
+          
+          <Container sx={{ height: 'auto', minHeight: '100vh', py: 2 }}>
+            { props.children }
+          </Container>
         </Grid>
       </Grid>    
     </Template>

@@ -17,14 +17,16 @@ const theme = createTheme({
 
 
 function Template(props) {
-  const { alerts } = props
+  const { alerts, manual } = props
 
   return (
     <ThemeProvider theme={ theme }>
       <CssBaseline />
-      <Container sx={{ height: '100vh', py: 2 }}>
-        { props.children }
-      </Container>
+      {
+        manual
+        ? props.children
+        : <Container sx={{ height: '100vh', py: 2 }}>{ props.children }</Container>
+      }
 
       <Grid container>
         <Grid item sm={ 12 } md={ 6 } sx={{ width: '100%', p: 1, position: 'fixed', zIndex: 1600, bottom: 0, right: 0 }}>
@@ -40,11 +42,13 @@ function Template(props) {
 }
 
 Template.propTypes = {
-  alerts: PropTypes.array
+  alerts: PropTypes.array,
+  manual: PropTypes.bool
 }
 
 Template.defaultProps = {
-  alerts: []
+  alerts: [],
+  manual: false
 }
 
 export default Template
