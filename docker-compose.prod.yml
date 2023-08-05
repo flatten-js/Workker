@@ -1,0 +1,8 @@
+services:
+  nginx:
+    volumes:
+      - ./app/build:/var/www/build
+      - ./nginx/conf.d/ssl.prod.conf:/etc/nginx/conf.d/ssl.conf
+  
+  app:
+    image: busybox
