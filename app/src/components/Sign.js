@@ -31,7 +31,7 @@ function Sign(props) {
             >
               <TextField 
                 variant="standard" 
-                label="email" 
+                label="Email"
                 fullWidth
                 required
               />
@@ -47,8 +47,8 @@ function Sign(props) {
             >
               <TextField 
                 variant="standard" 
-                label="password" 
-                type="password" 
+                label="Password" 
+                type="password"
                 fullWidth 
                 required
               />

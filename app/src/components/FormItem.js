@@ -11,6 +11,7 @@ function FormItem(props) {
       name={ name }
       control={ control }
       rules={ rules }
+      defaultValue=""
       render={
         ({ field, formState: { errors } }) => (
           React.cloneElement(props.children, { 

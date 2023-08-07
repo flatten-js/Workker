@@ -164,7 +164,12 @@ function UserTemplate(props) {
           </AppBar>
 
           
-          <Container sx={{ height: 'auto', minHeight: '100vh', py: 2 }}>
+          <Container sx={{
+            py: 2,
+            '.MuiGrid-root': {
+              height: 'auto'
+            } 
+          }}>
             { props.children }
           </Container>
         </Grid>
