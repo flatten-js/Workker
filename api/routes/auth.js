@@ -3,11 +3,14 @@ const router = express.Router()
 
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
+const sequelize = require('sequelize')
 
 const { JWT_SECRET, TOKEN_COOKIE_NAME } = require('##/config.js')
 const { router_handler, hash_password } = require('##/utils.js')
+const { account_verification } = require('##/src/mailer/template.js')
 const { User } = require('###/models')
-const { authenticate } = require('../middlewares/auth')
+const { authenticate } = require('##/middlewares/auth.js')
+const { APP_URL } = require('../config')
 
 router.get('/authenticate', authenticate, (req, res) => {
   res.json({})
@@ -39,8 +42,24 @@ router.post('/signup', router_handler(async (req, res) => {
 
   user = await User.create({ email, password: await hash_password(password) })
 
-  token_sign(res, user.id)
+  const token = jwt.sign({ user_id: user.id }, JWT_SECRET, { expiresIn: '24h' })
+  const options = account_verification(email, token)
+  await transport.sendMail(options)
+
   res.json({})
+}))
+
+router.get('/email/:token', router_handler(async (req, res) => {
+  const decoded = jwt.verify(req.params.token, JWT_SECRET)
+
+  const user = await User.findOne({ where: { id: decoded.user_id } })
+  if (!user) throw new Error('No users have been registered yet.')
+
+  user.verified_at = sequelize.fn('NOW')
+  await user.save()
+
+  token_sign(res, user.id)
+  res.redirect(APP_URL)
 }))
 
 router.post('/signout', router_handler((req, res) => {
