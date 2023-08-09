@@ -1,9 +1,17 @@
-import axios from 'axios'
-
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 
-import { Grid, Typography } from '@mui/material'
+import { 
+  Grid, 
+  Typography,
+  Dialog, 
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button 
+} from '@mui/material'
 
 import Template from '@@/templates/Template'
 import useAlerts from '@@/hooks/useAlerts'
@@ -14,15 +22,18 @@ import { signIn, signUp } from '@@/store'
 function Signxx(props) {
   const type = props.type || ''
 
-  const [alerts, { setCreateErrorAlert }] = useAlerts()
+  const [open, setOpen] = useState(false)
+
+  const [alerts, { setCreateAlert, setCreateErrorAlert }] = useAlerts()
 
   const { control, handleSubmit } = useForm({})
   const navigate = useNavigate()
 
   async function signin(data) {
     try {
-      await signIn(data)
-      navigate('/')
+      const { verified } = await signIn(data)
+      if (verified) navigate('/')
+      else setOpen(true)
     } catch (e) {
       setCreateErrorAlert(e)
     }
@@ -31,10 +42,15 @@ function Signxx(props) {
   async function signup(data) {
     try {
       await signUp(data)
-      navigate('/')
+      setCreateAlert('Your account has been registered.', 'success')
+      setOpen(true)
     } catch (e) {
       setCreateErrorAlert(e)
     }
+  }
+
+  function onDialogClose() {
+    setOpen(false)
   }
 
   return (
@@ -57,6 +73,19 @@ function Signxx(props) {
           }
         </Grid>
       </Grid>
+
+      <Dialog open={ open }>
+        <DialogTitle>Activate your account</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            An account confirmation email has been sent.
+            Please click the confirmation URL in the confirmation email to activate your account.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={ onDialogClose }>Close</Button>
+        </DialogActions>
+      </Dialog>
     </Template>
   )
 }

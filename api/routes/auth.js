@@ -6,8 +6,9 @@ const bcrypt = require('bcrypt')
 const sequelize = require('sequelize')
 
 const { JWT_SECRET, TOKEN_COOKIE_NAME } = require('##/config.js')
-const { router_handler, hash_password } = require('##/utils.js')
-const { account_verification } = require('##/src/mailer/template.js')
+const { router_handler, hash_password, to_message } = require('##/utils.js')
+const { transport } = require('###/mailer')
+const { account_activation } = require('##/mailer/template.js')
 const { User } = require('###/models')
 const { authenticate } = require('##/middlewares/auth.js')
 const { APP_URL } = require('../config')
@@ -29,9 +30,16 @@ router.post('/signin', router_handler(async (req, res) => {
 
   const compared = await bcrypt.compare(password, user.password)
   if (!compared) throw new Error('Password did not match.')
+
+  if (user.verified_at) {
+    token_sign(res, user.id)
+  } else {
+    const token = jwt.sign({ user_id: user.id }, JWT_SECRET, { expiresIn: '1h' })
+    const options = account_activation(email, token)
+    await transport.sendMail(options)
+  }
   
-  token_sign(res, user.id)
-  res.json({})
+  res.json({ verified: !!user.verified_at })
 }))
 
 router.post('/signup', router_handler(async (req, res) => {
@@ -42,25 +50,30 @@ router.post('/signup', router_handler(async (req, res) => {
 
   user = await User.create({ email, password: await hash_password(password) })
 
-  const token = jwt.sign({ user_id: user.id }, JWT_SECRET, { expiresIn: '24h' })
-  const options = account_verification(email, token)
+  const token = jwt.sign({ user_id: user.id }, JWT_SECRET, { expiresIn: '1h' })
+  const options = account_activation(email, token)
   await transport.sendMail(options)
 
   res.json({})
 }))
 
-router.get('/email/:token', router_handler(async (req, res) => {
-  const decoded = jwt.verify(req.params.token, JWT_SECRET)
+router.get('/email/:token', async (req, res) => {
+  try {
+    const decoded = jwt.verify(req.params.token, JWT_SECRET)
 
-  const user = await User.findOne({ where: { id: decoded.user_id } })
-  if (!user) throw new Error('No users have been registered yet.')
-
-  user.verified_at = sequelize.fn('NOW')
-  await user.save()
-
-  token_sign(res, user.id)
-  res.redirect(APP_URL)
-}))
+    const user = await User.findOne({ where: { id: decoded.user_id } })
+    if (!user) throw new Error('No users have been registered yet.')
+  
+    user.verified_at = sequelize.fn('NOW')
+    await user.save()
+  
+    token_sign(res, user.id)
+    res.redirect(APP_URL)
+  } catch (e) {
+    console.error(e)
+    res.redirect(APP_URL)
+  }
+})
 
 router.post('/signout', router_handler((req, res) => {
   res.clearCookie(TOKEN_COOKIE_NAME)

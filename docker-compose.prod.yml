@@ -3,6 +3,16 @@ services:
     volumes:
       - ./app/build:/var/www/build
       - ./nginx/conf.d/ssl.prod.conf:/etc/nginx/conf.d/ssl.conf
+      - ./letsencrypt/certbot:/var/www/certbot
+      - ./letsencrypt/etc:/etc/letsencrypt
+    
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./letsencrypt/certbot:/var/www/certbot
+      - ./letsencrypt/etc:/etc/letsencrypt
+      - ./letsencrypt/logs:/var/log/letsencrypt
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
   
   app:
     image: busybox
