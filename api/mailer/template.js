@@ -1,7 +1,7 @@
 const { APP_URL } = require('##/config.js')
 
 function activate_account(token) {
-  const subject = 'Account Activation'
+  const subject = 'Request to activate your account'
   const html = `
     <h1>Account Activation</h1>
     <p>Thank you for signing up for Waylap.com!</p>

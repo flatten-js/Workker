@@ -7,7 +7,10 @@ class Mailer {
   static mail_options(to, subject, html) {
     return {
       sender: MAIL_USER,
-      from: MAIL_USER,
+      from: {
+        name: 'waylap.com',
+        address: MAIL_USER
+      },
       to,
       subject,
       html
