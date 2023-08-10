@@ -14,8 +14,6 @@ services:
 
   app:
     build: ./app
-    ports:
-      - 3000:3000
     environment:
       - DANGEROUSLY_DISABLE_HOST_CHECK=true
       - WDS_SOCKET_PORT=0

@@ -12,7 +12,7 @@ const place = require('##/stores/place.js')
 
 const { router_handler, retry } = require('##/utils.js')
 
-router.get('/all', router_handler(async (req, res) => {
+router.get('/all', authenticate, router_handler(async (req, res) => {
 	const projects = await Project.findAll({ where: { public: true }, order: [['updatedAt', 'DESC']] })
 	return res.json(projects)
 }))
@@ -22,7 +22,7 @@ router.get('/user_id', authenticate, router_handler(async (req, res) => {
 	return res.json(projects)
 }))
 
-router.get('/get', router_handler(async (req, res) => {
+router.get('/get', authenticate, router_handler(async (req, res) => {
 	const decoded = verify(req)
 	const project = await Project.findOne({ 
 		where: { 

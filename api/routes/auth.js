@@ -6,9 +6,8 @@ const bcrypt = require('bcrypt')
 const sequelize = require('sequelize')
 
 const { JWT_SECRET, TOKEN_COOKIE_NAME } = require('##/config.js')
-const { router_handler, hash_password, to_message } = require('##/utils.js')
-const { transport } = require('###/mailer')
-const { account_activation } = require('##/mailer/template.js')
+const { router_handler, hash_password } = require('##/utils.js')
+const Mailer = require('###/mailer')
 const { User } = require('###/models')
 const { authenticate } = require('##/middlewares/auth.js')
 const { APP_URL } = require('../config')
@@ -17,9 +16,15 @@ router.get('/authenticate', authenticate, (req, res) => {
   res.json({})
 })
 
-function token_sign(res, user_id) {
+function access_token(user_id) {
   const token = jwt.sign({ user_id }, JWT_SECRET, { expiresIn: '1h' })
-  res.cookie(TOKEN_COOKIE_NAME, token, { httpOnly: true, secure: true, sameSite: true })
+  const options = { httpOnly: true, secure: true, sameSite: true }
+  return [token, options]
+}
+
+function activate_token(user_id) {
+  const token = jwt.sign({ user_id }, JWT_SECRET, { expiresIn: 60 * 5 })
+  return [token]
 }
 
 router.post('/signin', router_handler(async (req, res) => {
@@ -32,11 +37,11 @@ router.post('/signin', router_handler(async (req, res) => {
   if (!compared) throw new Error('Password did not match.')
 
   if (user.verified_at) {
-    token_sign(res, user.id)
+    const token = access_token(user.id)
+    res.cookie(TOKEN_COOKIE_NAME, ...token)
   } else {
-    const token = jwt.sign({ user_id: user.id }, JWT_SECRET, { expiresIn: '1h' })
-    const options = account_activation(email, token)
-    await transport.sendMail(options)
+    const token = activate_token(user.id)
+    await Mailer.activate_account(email, ...token)
   }
   
   res.json({ verified: !!user.verified_at })
@@ -50,24 +55,27 @@ router.post('/signup', router_handler(async (req, res) => {
 
   user = await User.create({ email, password: await hash_password(password) })
 
-  const token = jwt.sign({ user_id: user.id }, JWT_SECRET, { expiresIn: '1h' })
-  const options = account_activation(email, token)
-  await transport.sendMail(options)
+  const token = activate_token(user.id)
+  await Mailer.activate_account(email, ...token)
 
   res.json({})
 }))
 
-router.get('/email/:token', async (req, res) => {
+router.get('/activate/:token', async (req, res) => {
   try {
     const decoded = jwt.verify(req.params.token, JWT_SECRET)
 
     const user = await User.findOne({ where: { id: decoded.user_id } })
     if (!user) throw new Error('No users have been registered yet.')
+
+    if (!user.verified_at) {
+      user.verified_at = sequelize.fn('NOW')
+      await user.save()
+
+      const token = access_token(user.id)
+      res.cookie(TOKEN_COOKIE_NAME, ...token)
+    }
   
-    user.verified_at = sequelize.fn('NOW')
-    await user.save()
-  
-    token_sign(res, user.id)
     res.redirect(APP_URL)
   } catch (e) {
     console.error(e)
@@ -75,7 +83,7 @@ router.get('/email/:token', async (req, res) => {
   }
 })
 
-router.post('/signout', router_handler((req, res) => {
+router.post('/signout', authenticate, router_handler((req, res) => {
   res.clearCookie(TOKEN_COOKIE_NAME)
   res.json({})
 }))
