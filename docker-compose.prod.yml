@@ -1,10 +1,20 @@
 services:
   nginx:
+    image: nginx:latest
+    restart: always
+    ports:
+     - 80:80
+     - 443:443
     volumes:
-      - ./app/build:/var/www/build
+      - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf
       - ./nginx/conf.d/ssl.prod.conf:/etc/nginx/conf.d/ssl.conf
+      - ./nginx/.htpasswd:/etc/nginx/.htpasswd
+      - ./nginx/logs:/var/log/nginx
       - ./letsencrypt/certbot:/var/www/certbot
       - ./letsencrypt/etc:/etc/letsencrypt
+      - ./app/build:/var/www/build
+    depends_on:
+      - api
     
   certbot:
     image: certbot/certbot:latest
@@ -13,6 +23,43 @@ services:
       - ./letsencrypt/etc:/etc/letsencrypt
       - ./letsencrypt/logs:/var/log/letsencrypt
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+      
+  api:
+    build: ./api
+    volumes:
+      - ./api:/usr/local/src
+      - api_node_modules:/usr/local/src/node_modules
+    depends_on:
+      mysql:
+        condition: service_healthy
   
-  app:
-    image: busybox
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_DATABASE: waylap
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root"]
+      interval: 30s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+  
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.10
+    command: /bin/bash -c "/usr/share/elasticsearch/data/init.sh & /usr/local/bin/docker-entrypoint.sh"
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512M -Xmx512M"
+    ulimits:
+        memlock:
+          soft: -1
+          hard: -1
+    volumes:
+      - ./data/elasticsearch:/usr/share/elasticsearch/data
+    restart: always
+
+volumes:
+  api_node_modules:

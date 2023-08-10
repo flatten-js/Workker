@@ -20,12 +20,17 @@ services:
     volumes:
       - ./app:/usr/local/src
       - app_node_modules:/usr/local/src/node_modules
+    depends_on:
+      - api
   
   api:
     build: ./api
     volumes:
       - ./api:/usr/local/src
       - api_node_modules:/usr/local/src/node_modules
+    depends_on:
+      mysql:
+        condition: service_healthy
 
   mysql:
     image: mysql:8
@@ -34,6 +39,12 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: 1
     volumes:
       - ./data/mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root"]
+      interval: 30s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
   
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.10
@@ -57,7 +68,6 @@ services:
   #     - ELASTICSEARCH_URL=http://elasticsearch:9200
   #   depends_on:
   #     - elasticsearch
-
 
 volumes:
   app_node_modules:
