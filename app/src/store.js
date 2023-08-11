@@ -48,3 +48,31 @@ export async function getMarkers(project_id) {
 export async function createStamp(marker_id) {
   return await fetch('/api/stamp/add', { marker_id }, 'post')
 }
+
+export async function getOwnNFTs() {
+  return await fetch('/api/nft/own')
+}
+
+export async function reveal(package_id, token_id) {
+  return await fetch('/api/nft/reveal', { package_id, token_id }, 'post')
+}
+
+export async function getPackages() {
+  return await fetch('/api/booth/packages')
+}
+
+export async function exchange(package_id) {
+  return await fetch('/api/booth/exchange', { package_id }, 'post')
+} 
+
+export async function getUser() {
+  return await fetch('/api/user/get')
+}
+
+export async function reportProject(project_id) {
+  return await fetch('/api/project/report', { project_id }, 'post')
+} 
+
+export async function getReported(project_id) {
+  return await fetch('/api/project/reported', { params: { project_id } })
+}

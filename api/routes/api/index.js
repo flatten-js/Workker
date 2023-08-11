@@ -5,4 +5,8 @@ router.use('/project', require('./project.js'))
 router.use('/marker', require('./marker.js'))
 router.use('/stamp', require('./stamp.js'))
 
+router.use('/user', require('./user.js'))
+router.use('/booth', require('./booth.js'))
+router.use('/nft', require('./nft.js'))
+
 module.exports = router

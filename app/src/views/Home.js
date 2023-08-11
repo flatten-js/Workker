@@ -8,7 +8,6 @@ import { getProjectAll } from '@@/store'
 import useAlerts from '@@/hooks/useAlerts'
 
 
-let mounted = false
 function Home() {
   const [projects, setProjects] = useState([])
 
@@ -23,13 +22,8 @@ function Home() {
     }
   }
 
-  async function onMounted() {
-    mounted = true
-    await fetch()
-  }
-
   useEffect(() => {
-    if (!mounted) onMounted()
+    fetch()
   }, [])
 
   return (

@@ -11,6 +11,14 @@ const MAIL_SMTP_PORT = process.env.MAIL_SMTP_PORT
 const MAIL_USER = process.env.MAIL_USER
 const MAIL_PASS = process.env.MAIL_PASS
 
+NFT_PROVIDER = process.env.NFT_PROVIDER || 'https://polygon-mumbai-bor.publicnode.com'
+NFT_OWNER_ADDRESS = process.env.NFT_OWNER_ADDRESS
+NFT_OWNER_PRIVATE_KEY = process.env.NFT_OWNER_PRIVATE_KEY
+NFT_STORAGE_PATH = process.env.NFT_STORAGE_PATH || './storage/develop.vol.1/metadata'
+
+METADATA_PUBLIC_KEY = (process.env.METADATA_PUBLIC_KEY || '').replace(/\\n/g, '\n')
+METADATA_PRIVATE_KEY = (process.env.METADATA_PRIVATE_KEY || '').replace(/\\n/g, '\n')
+METADATA_PATH = process.env.METADATA_PATH || 'https://localhost/storage/{package}/nfts/{image}'
 
 module.exports = {
   APP_URL,
@@ -21,5 +29,12 @@ module.exports = {
   MAIL_SMTP_HOST,
   MAIL_SMTP_PORT,
   MAIL_USER,
-  MAIL_PASS
+  MAIL_PASS,
+  NFT_PROVIDER,
+  NFT_OWNER_ADDRESS,
+  NFT_OWNER_PRIVATE_KEY,
+  NFT_STORAGE_PATH,
+  METADATA_PUBLIC_KEY,
+  METADATA_PRIVATE_KEY,
+  METADATA_PATH
 }

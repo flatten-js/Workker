@@ -15,7 +15,7 @@ module.exports = {
      * }], {});
     */
     await queryInterface.bulkInsert('users', [
-      { id: 1, email: 'developer@example.com', password: await hash_password('p@ssw0rd'), 'verified_at': Sequelize.literal('now()') }
+      { id: 1, email: 'developer@example.com', password: await hash_password('p@ssw0rd'), 'verified_at': Sequelize.literal('now()'), ticket: 10 }
     ])
   },
 

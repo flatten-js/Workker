@@ -16,19 +16,19 @@ import { useTheme } from '@mui/material/styles'
 
 import UserTemplate from "@@/templates/UserTemplate"
 import { Map, Stamp } from '@@/components'
-import { getProject, getMarkers, createStamp } from '@@/store'
+import { getProject, getMarkers, createStamp, reportProject, getReported } from '@@/store'
 import useAlerts from '@@/hooks/useAlerts'
 
-let mounted = false
 function Project() {
   const { id: project_id } = useParams() 
 
   const [project, setProject] = useState({})
   const [markers, setMarkers] = useState([])
+  const [reported, setReported] = useState(true)
   const [position, setPosition] = useState(null)
   const [dialog, setDialog] = useState({})
 
-  const [alerts, { setCreateAlert }] = useAlerts()
+  const [alerts, { setCreateAlert, setCreateErrorAlert }] = useAlerts()
 
   const theme = useTheme()
   
@@ -37,8 +37,10 @@ function Project() {
       const project = await getProject(project_id)
       if (project) {
         const markers = await getMarkers(project_id)
+        const reported = await getReported(project_id)
         setProject(project)
         setMarkers(markers)
+        setReported(reported)
       }
     } catch (e) {
       setCreateAlert('Failed to load data.')
@@ -46,8 +48,6 @@ function Project() {
   }
 
   async function onMounted() {
-    mounted = true
-
     await fetch()
 
     setTimeout(function run() {
@@ -62,7 +62,7 @@ function Project() {
   }
 
   useEffect(() => {
-    if (!mounted) onMounted()
+    onMounted()
   }, [])
 
   function onDialogClose() {
@@ -108,10 +108,42 @@ function Project() {
     }
   }
 
+  async function report() {
+    try {
+      await reportProject(project_id)
+      setCreateAlert('Report successfully reported', 'success')
+    } catch (e) {
+      setCreateErrorAlert(e)
+    }
+  }
+
   return (
     <UserTemplate alerts={ alerts }>
       <Grid container sx={{ height: '100vh' }}>
         <Paper sx={{ width: '100%', minHeight: '100%', p: 4 }}>
+          {
+            reported
+            ? (
+              <Button 
+                variant="outlined" 
+                sx={{ display: 'block', mb: 2, ml: 'auto' }}
+                disabled
+              >
+                Reported
+              </Button>
+            )
+            : (
+              <Button 
+                variant="outlined" 
+                sx={{ display: 'block', mb: 2, ml: 'auto' }}
+                disabled={ markers.filter(marker => marker.Stamps.length).length != markers.length }
+                onClick={ report }
+              >
+                Report
+              </Button>
+            )
+          }
+          
           <Grid container spacing={2} sx={{ height: '100%' }}>
             <Grid item sm={12} md={6} sx={{ width: '100%', minHeight: '50vh' }}>
               <Map loaded={ markers.length } location={ position } markers={ markers } radius={ project.radius } />              

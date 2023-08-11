@@ -3,7 +3,7 @@ const router = express.Router()
 
 const { Op } = require('sequelize')
 
-const { sequelize, Project, Marker } = require('###/models')
+const { sequelize, Project, Marker, Stamp, User, projectReport } = require('###/models')
 
 const { verify, authenticate } = require('##/middlewares/auth.js')
 
@@ -99,6 +99,48 @@ router.post('/delete', authenticate, router_handler(async (req, res) => {
 	}
 
 	res.json({})
+}))
+
+router.post('/report', authenticate, router_handler(async (req, res) => {
+	const { user_id } = req.decoded
+	const { project_id } = req.body
+
+	const markers = await Marker.findAll({ 
+		where: { project_id },
+		include: [
+			{ 
+				model: Stamp, 
+				required: false,
+				where: {
+					user_id: {
+						[Op.eq]: user_id
+					}
+				}
+			}
+		]
+	})
+
+	const can_report = markers.every(market => market.Stamps.length)
+	if (!can_report) {
+		return res.status(500).send('There are some spots that are not stamped')
+	}
+
+	const is_reported = await projectReport.findOne({ where: { project_id, user_id } })
+	if (is_reported) throw Error('Already reported in this project')
+
+	await sequelize.transaction(async transaction => {
+		const user = await User.findOne({ where: { id: user_id }, lock: true }, { transaction })
+		user.ticket += 1
+		await user.save({ transaction })
+		await projectReport.create({ project_id, user_id }, { transaction })
+	})
+}))
+
+router.get('/reported', authenticate, router_handler(async (req, res) => {
+	const { user_id } = req.decoded
+	const { project_id } = req.query
+	const reported = await projectReport.findOne({ where: { project_id, user_id } })
+	res.json(!!reported)
 }))
 
 module.exports = router
