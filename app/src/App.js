@@ -2,10 +2,12 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 import { GuardRoute } from './components'
 
-import Home from './views/Home'
-import Project from './views/Project'
 import Signxx from './views/Signxx'
+import Home from './views/Home'
+import Booth from './views/Booth'
+import NFTs from './views/NFTs'
 import Account from './views/Account'
+import Project from './views/Project'
 
 import "./App.css"
 
@@ -19,8 +21,10 @@ function App() {
         </Route>
         <Route element={ <GuardRoute user redirect="/signin" /> }>
           <Route path="/" element={ <Home /> } />
-          <Route path="/:id" element={ <Project /> } />
+          <Route path="/booth" element={ <Booth /> } />
+          <Route path="/nfts" element={ <NFTs /> } />
           <Route path="/account" element={ <Account /> } />
+          <Route path="/:id" element={ <Project /> } />
         </Route>
       </Routes>
     </BrowserRouter>

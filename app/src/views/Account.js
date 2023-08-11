@@ -24,7 +24,6 @@ import { getProjectUserId, generateProject } from '@@/store'
 import useAlerts from '@@/hooks/useAlerts'
 import { deleteProject as storeDeleteProject } from '@@/store'
 
-let mounted = false
 function Account() {
   const [anchorEl, setAnchorEl] = useState(null)
   const [project, setProject] = useState(null)
@@ -44,14 +43,9 @@ function Account() {
       setCreateAlert('Failed to load data.')
     }
   }
-
-  async function onMounted() {
-    mounted = true
-    await fetch()
-  }
-
+  
   useEffect(() => {
-    if (!mounted) onMounted()
+    fetch()
   }, [])
 
   async function getCurrentPosition() {
@@ -73,7 +67,6 @@ function Account() {
       await generateProject({ ...data, location: location.join(',') })
       await fetch()
 
-      setIsGenerate(false)
       setCreateAlert('Generating has been completed.', 'success')
       reset()
     } catch (e) {

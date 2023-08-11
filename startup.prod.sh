@@ -2,6 +2,9 @@
 
 option=$1
 
+git fetch
+git reset --hard origin/develop
+
 case $option in
   --no-build)
     # Skip building the app
@@ -12,6 +15,4 @@ case $option in
     ;;
 esac
 
-git fetch
-git reset --hard origin/develop
 docker-compose -f docker-compose.prod.yml up -d --build
