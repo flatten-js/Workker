@@ -8,6 +8,8 @@ const cookieParser = require('cookie-parser')
 app.use(express.json())
 app.use(cookieParser())
 
+app.use('/storage', express.static('./storage'))
+
 app.use('/api', require('./routes/api'))
 app.use('/auth', require('./routes/auth'))
 
