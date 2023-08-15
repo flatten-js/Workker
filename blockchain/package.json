@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.9.3",
+    "ganache": "^7.9.0",
+    "truffle": "^5.11.2"
+  },
+  "scripts": {
+    "start": "ganache -h 0.0.0.0 --deterministic",
+    "build": "truffle compile",
+    "migrate": "truffle migrate"
+  }
+}

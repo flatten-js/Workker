@@ -11,7 +11,7 @@ const MAIL_SMTP_PORT = process.env.MAIL_SMTP_PORT
 const MAIL_USER = process.env.MAIL_USER
 const MAIL_PASS = process.env.MAIL_PASS
 
-NFT_PROVIDER = process.env.NFT_PROVIDER || 'https://polygon-mumbai-bor.publicnode.com'
+NFT_PROVIDER = process.env.NFT_PROVIDER || 'http://blockchain:8545'
 NFT_OWNER_ADDRESS = process.env.NFT_OWNER_ADDRESS
 NFT_OWNER_PRIVATE_KEY = process.env.NFT_OWNER_PRIVATE_KEY
 NFT_STORAGE_PATH = process.env.NFT_STORAGE_PATH || './storage/develop.vol.1/metadata'

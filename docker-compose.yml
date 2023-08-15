@@ -69,6 +69,17 @@ services:
   #   depends_on:
   #     - elasticsearch
 
+  blockchain:
+    tty: true
+    image: node:18
+    working_dir: /usr/local/src
+    command: /bin/bash -c "yarn && yarn start"
+    volumes:
+      - ./blockchain:/usr/local/src
+      - blockchain_node_modules:/usr/local/src/node_modules
+
+
 volumes:
   app_node_modules:
   api_node_modules:
+  blockchain_node_modules:

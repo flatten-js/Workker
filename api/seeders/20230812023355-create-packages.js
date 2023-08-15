@@ -13,7 +13,13 @@ module.exports = {
      * }], {});
     */
     await queryInterface.bulkInsert('packages', [
-      { id: 1, name: 'develop.vol.1', description: 'Development Package', contract_address: '0x319a956f55Fe4E056c1374F4951672B564D738B7', require_ticket: 1 }
+      { 
+        id: 1, 
+        name: 'develop.vol.1', 
+        description: 'Development Package', 
+        contract_address: '0xD833215cBcc3f914bD1C9ece3EE7BF8B14f841bb',
+        require_ticket: 1 
+      }
     ])
   },
 

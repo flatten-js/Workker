@@ -35,12 +35,14 @@ function pickup_nft(nfts) {
   return nfts.find(nft => { y += nft.rate; return x < y })
 }
 
-async function create_metadata(package) {
-  const package_nfts = await PackageNft.findAll({ where: { package_id: package.id } })
-  const nft = pickup_nft(package_nfts)
+function token_serialize(token_id, max_token) {
+  const max_token_length = max_token.length
+  return ('0'.repeat(max_token_length)+token_id).slice(-max_token_length)
+}
 
+async function create_metadata(package, nft, token_id, max_token) {
   const metadata = { 
-    name: nft.name, 
+    name: `${nft.name} #${token_serialize(token_id, max_token)}`, 
     description: nft.description, 
     image: METADATA_PATH.replace('{package}', package.name).replace('{image}', `${nft.name}.png`)
   }
@@ -71,11 +73,16 @@ async function call_ownable_method(contract, method, ...args) {
 }
 
 async function mint(package, contract) {
+  const package_nfts = await PackageNft.findAll({ where: { package_id: package.id } })
+  const nft = pickup_nft(package_nfts)
+
   const receipt = await call_ownable_method(contract, 'safeMint')
   const { logs } = await web3.eth.getTransactionReceipt(receipt.transactionHash)
   const token_id = web3.utils.hexToNumber(logs[0].topics[3])
-  const metadata = await create_metadata(package)
+
+  const metadata = await create_metadata(package, nft, token_id, "99999")
   await upload_metadata(token_id, metadata)
+  
   return token_id
 }
 
