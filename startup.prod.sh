@@ -1,17 +1,23 @@
 #!/bin/sh
 
-option=$1
+BRANCH=$1
+OPTION=$2
+
+if [ -z "$BRANCH" ]; then
+  echo "Branch designation is required" 
+  exit 1
+fi
 
 git fetch
-git reset --hard origin/develop
+git reset --hard origin/$BRANCH
 
-case $option in
+case $OPTION in
   --no-build)
     # Skip building the app
     ;;
   
   *)
-    docker-compose run app bash -c "yarn; yarn build"
+    docker-compose run --rm app bash -c "yarn; yarn build"
     ;;
 esac
 

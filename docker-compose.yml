@@ -71,9 +71,7 @@ services:
 
   blockchain:
     tty: true
-    image: node:18
-    working_dir: /usr/local/src
-    command: /bin/bash -c "yarn && yarn start"
+    build: ./blockchain
     volumes:
       - ./blockchain:/usr/local/src
       - blockchain_node_modules:/usr/local/src/node_modules

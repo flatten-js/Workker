@@ -6,4 +6,4 @@ COPY package.json yarn.lock .
 RUN yarn
 RUN yarn global add nodemon sequelize-cli
 
-CMD ["sh", "startup.sh"]
+CMD ["./startup.sh"]

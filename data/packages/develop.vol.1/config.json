@@ -1,0 +1,25 @@
+{
+  "package": {
+    "name": "develop.vol.1",
+    "description": "Open or not open, it's up to you",
+    "image": "https://localhost/storage/develop.vol.1/package.png",
+    "require_ticket": 1
+  },
+  "nfts": [
+    {
+      "name": "A",
+      "description": "Development NFT",
+      "rate": "5"
+    },
+    {
+      "name": "B",
+      "description": "Development NFT",
+      "rate": "25"
+    },
+    {
+      "name": "C",
+      "description": "Development NFT",
+      "rate": "70"
+    }
+  ]
+}

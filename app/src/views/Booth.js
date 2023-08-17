@@ -85,16 +85,15 @@ function Booth() {
                     <ListItem key={ _package.id }>
                       <Box sx={{ width: '100%' }}>
                         <Typography variant="subtitle2">{ _package.name }</Typography>
-                        <Typography variant="body2">{ _package.description }</Typography>
-                        <Box sx={{ textAlign: 'right', mb: 1 }}>
+                        <Typography variant="body2" sx={{ mb: 2 }}>{ _package.description }</Typography>
+                        <Box sx={{ textAlign: 'right', mb: 2 }}>
                           <Button 
                             sx={{ ml: 'auto' }}
                             variant="outlined"
                             disabled={ _package.require_ticket > user.ticket || exchanging } 
                             onClick={ () => exchange(_package.id) }
-                            endIcon={ <Cached /> }
                           >
-                            { _package.require_ticket }
+                            Exchange
                           </Button>
                         </Box>
                         <Divider />

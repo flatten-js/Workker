@@ -1,12 +1,15 @@
 {
+  "license": "MIT",
   "dependencies": {
     "@openzeppelin/contracts": "^4.9.3",
+    "@truffle/hdwallet-provider": "^2.1.13",
     "ganache": "^7.9.0",
     "truffle": "^5.11.2"
   },
   "scripts": {
-    "start": "ganache -h 0.0.0.0 --deterministic",
+    "start": "ganache -h 0.0.0.0 --deterministic --db ./db",
     "build": "truffle compile",
-    "migrate": "truffle migrate"
+    "migrate": "truffle migrate",
+    "console": "truffle console"
   }
 }
