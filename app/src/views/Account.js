@@ -19,13 +19,14 @@ import {
 import { ScienceSharp, MoreVert } from '@mui/icons-material'
 
 import UserTemplate from "@@/templates/UserTemplate"
-import { Pop, FormItem } from '@@/components'
+import { Pop, FormItem, Loading } from '@@/components'
 import { getProjectUserId, generateProject } from '@@/store'
 import useAlerts from '@@/hooks/useAlerts'
 import { deleteProject as storeDeleteProject } from '@@/store'
 
 function Account() {
   const [anchorEl, setAnchorEl] = useState(null)
+  const [loading, setLoading] = useState(true)
   const [project, setProject] = useState(null)
   const [projects, setProjects] = useState([])
   const [isGenerate, setIsGenerate] = useState(false)
@@ -37,10 +38,13 @@ function Account() {
 
   async function fetch() {
     try {
+      setLoading(true)
       const projects = await getProjectUserId()
       setProjects(projects)
     } catch (e) {
       setCreateAlert('Failed to load data.')
+    } finally {
+      setLoading(false)
     }
   }
   
@@ -137,9 +141,22 @@ function Account() {
               })
             )
             : (
-              <Grid item xs={12} sm={6} md={4} lg={3}>
-                <Pop />
-              </Grid>
+              <Loading
+                loading={ loading }
+                message={
+                  Message => (
+                    <Grid item xs={12}>
+                      <Message center>
+                        There are currently no projects created
+                      </Message>
+                    </Grid>
+                  )
+                }
+              >
+                <Grid item xs={12} sm={6} md={4} lg={3}>
+                  <Pop />
+                </Grid>
+              </Loading>
             )
           }
         </Grid>
