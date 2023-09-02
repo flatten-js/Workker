@@ -65,12 +65,11 @@ function UserTemplate(props) {
 
   const drawer = (
     <>
-      <List subheader={ <ListSubheader>Project</ListSubheader> }>
-        <ListLinkItem to="/">Home</ListLinkItem>
-      </List>
-      <List subheader={ <ListSubheader>Exchange</ListSubheader> }>
-        <ListLinkItem to="/booth">Booth</ListLinkItem>
-        <ListLinkItem to="/nfts">NFTs</ListLinkItem>
+      <List subheader={ <ListSubheader>Navigations</ListSubheader> }>
+        <ListLinkItem to="/">HOME</ListLinkItem>
+        <ListLinkItem to="/factory">FACTORY</ListLinkItem>
+        <ListLinkItem to="/exchange">EXCHANGE</ListLinkItem>
+        <ListLinkItem to="/nfts">NFTS</ListLinkItem>
       </List>
     </>
   )

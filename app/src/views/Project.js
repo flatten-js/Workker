@@ -41,6 +41,8 @@ function Project() {
         setProject(project)
         setMarkers(markers)
         setReported(reported)
+      } else {
+        setCreateAlert('This project does not exist')
       }
     } catch (e) {
       setCreateAlert('Failed to load data.')

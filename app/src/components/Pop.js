@@ -10,10 +10,10 @@ import {
 import { useTheme } from '@mui/material/styles'
 
 function Pop(props) {
+  const id = props.id
   const image = props.image || '/CCCCCC.png'
   const title = props.title || ''
-  const description = props.description || 'There is no description for this project.'
-  const try_path = `/${props.id}`
+  const description = props.description || ''
   const loaded = props.loaded || false
 
   const theme = useTheme()
@@ -36,7 +36,13 @@ function Pop(props) {
           loaded
           ? (
             <>
-              <Typography variant="h6" component="div">{ title }</Typography>
+              <Typography 
+                variant="h6" 
+                component="div"
+                sx={{ mb: 1 }}
+              >
+                { title }
+              </Typography>
               <Typography 
                 variant="body2" 
                 color="text.secondary" 
@@ -65,7 +71,7 @@ function Pop(props) {
         {
           loaded
           ? (
-            <Button href={ try_path }>Try</Button>
+            <Button href={ `/${id}` }>Try</Button>
           )
           : <Skeleton variant="rounded" sx={{ width: '60px', height: 'auto', aspectRatio: '16/9' }} />
         }

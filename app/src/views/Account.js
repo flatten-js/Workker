@@ -105,10 +105,7 @@ function Account() {
     <>
       <UserTemplate alerts={ alerts }>
         <Grid container spacing={2}>
-          <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'right' }}>
-            <Button variant="outlined" onClick={ () => setIsGenerate(true) }>Generate</Button>
-          </Grid>
-          
+
           {
             projects.length
             ? (

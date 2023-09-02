@@ -17,7 +17,7 @@ import useAlerts from '@@/hooks/useAlerts'
 import { Loading } from '@@/components'
 import { getPackages, exchange as _exchange, getUser } from '@@/store'
 
-function Booth() {
+function Exchange() {
   const [user, setUser] = useState({})
   const [packages, setPackages] = useState([])
   const [exchanging, setExchanging] = useState(false)
@@ -121,4 +121,4 @@ function Booth() {
   )
 }
 
-export default Booth
+export default Exchange

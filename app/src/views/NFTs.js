@@ -7,7 +7,7 @@ import useAlerts from '@@/hooks/useAlerts'
 import { NFT, Loading } from '@@/components'
 import { getOwnNFTs, reveal } from '@@/store'
 
-function Collections() {
+function NFTs() {
   const [nfts, setNFTs] = useState([])
   const [revealing, setRevealing] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -94,4 +94,4 @@ function Collections() {
   )
 }
 
-export default Collections
+export default NFTs
