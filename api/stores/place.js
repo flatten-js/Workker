@@ -12,6 +12,8 @@ const place = axios.create({
 })
 
 async function nearby(location, radius) {
+  location = [location.lat, location.lon].join(',')
+
   const max_size = 3
   const results = []
 

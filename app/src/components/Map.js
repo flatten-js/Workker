@@ -7,10 +7,12 @@ import 'leaflet-sprite/dist/leaflet.sprite.js'
 L.Icon.Default.imagePath = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/'
 
 function Map(props) {
-  const location = props.location
-  const markers = props.markers || []
+  const position = props.position
   const radius = props.radius
   const loaded = props.loaded || false
+  
+  let markers = props.markers
+  markers ||= (props._markers || []).map(marker => ({ ...marker, position: marker.position.split(',') }))
 
   return (
     loaded
@@ -27,7 +29,7 @@ function Map(props) {
         />
         
         {
-          location && <Marker position={ location } /> 
+          position && <Marker position={ position } /> 
         }
 
         {

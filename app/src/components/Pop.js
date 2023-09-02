@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom"
+
 import { 
   Card, 
   CardActions, 
@@ -71,7 +73,7 @@ function Pop(props) {
         {
           loaded
           ? (
-            <Button href={ `/${id}` }>Try</Button>
+            <Button component={ Link } to={ `/${id}` }>Try</Button>
           )
           : <Skeleton variant="rounded" sx={{ width: '60px', height: 'auto', aspectRatio: '16/9' }} />
         }

@@ -33,6 +33,10 @@ export async function getProject(project_id) {
   return await fetch('/api/project/get', { params: { project_id } })
 }
 
+export async function createProject(data) {
+  return await fetch('/api/project/create', data, 'post')
+}
+
 export async function generateProject(data) {
   return await fetch('/api/project/generate', data, 'post')
 }

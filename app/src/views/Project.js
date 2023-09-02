@@ -51,20 +51,17 @@ function Project() {
 
   async function onMounted() {
     await fetch()
-
-    setTimeout(function run() {
-      navigator.geolocation.watchPosition(position => {
-        const { latitude, longitude } = position.coords
-        setPosition([latitude, longitude])
-      }, err => {
-        setCreateAlert(err.message)
-        setTimeout(run, 2500)
-      })
-    }, 0)
   }
 
   useEffect(() => {
     onMounted()
+    const id = navigator.geolocation.watchPosition(position => {
+      const { latitude: lat, longitude: lon } = position.coords
+      setPosition({ lat, lon })
+    }, err => {
+      setCreateAlert(err.message)
+    })
+    return () => navigator.geolocation.clearWatch(id)
   }, [])
 
   function onDialogClose() {
@@ -128,14 +125,14 @@ function Project() {
           
           <Grid container spacing={2} sx={{ height: '100%' }}>
             <Grid item sm={12} md={6} sx={{ width: '100%', minHeight: '50vh' }}>
-              <Map loaded={ markers.length } location={ position } markers={ markers } radius={ project.radius } />              
+              <Map loaded={ markers.length } position={ position } markers={ markers } radius={ project.radius } />              
             </Grid>
             <Grid item sm={12} md={6} sx={{ width: '100%' }}>
               <Grid container>
                 <Grid item xs={12} sx={{ width: '100%', mb: 2 }}>
                   {
                     markers.length
-                    ? <Typography variant="h5" component="div" align="center">Stamps: {markers.filter(marker => marker.Stamps.length).length}/{markers.length}</Typography>
+                    ? <Typography variant="h5" component="div" align="center">{markers.filter(marker => marker.Stamps.length).length}/{markers.length}</Typography>
                     : <Skeleton sx={{ fontSize: theme.typography.h5.fontSize }} />
                   }
                   

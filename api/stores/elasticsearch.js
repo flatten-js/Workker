@@ -19,14 +19,14 @@ async function bulk(results, field_cb) {
   })
 }
 
-async function nearby(location, radius, size = 10) {
+async function nearby(position, radius, size = 10) {
   const query = {
     "query": {
       "function_score": {
         "query": {
           "geo_distance": {
             "distance": `${radius}m`,
-            "location": location
+            "position": position
           }
         },
         "random_score": {}

@@ -11,10 +11,10 @@ wget -O /usr/local/bin/wait-for-it.sh https://raw.githubusercontent.com/vishnubo
   curl -X PUT http://localhost:9200/places/_mapping -H 'Content-Type: application/json' -d '
     {
       "properties": {
-        "name": {
+        "title": {
           "type": "text"
         },
-        "location": {
+        "position": {
           "type": "geo_point"
         }
       }

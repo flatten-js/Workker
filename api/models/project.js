@@ -19,7 +19,9 @@ module.exports = (sequelize, DataTypes) => {
     description: DataTypes.STRING,
     image: DataTypes.STRING,
     radius: DataTypes.FLOAT,
-    public: DataTypes.BOOLEAN
+    public: DataTypes.BOOLEAN,
+    ticket: DataTypes.INTEGER,
+    distance: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Project',

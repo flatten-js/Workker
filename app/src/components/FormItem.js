@@ -5,6 +5,7 @@ function FormItem(props) {
   const name = props.name
   const control = props.control
   const rules = props.rules || {}
+  const sx = props.sx || {}
 
   return (
     <Controller
@@ -13,13 +14,13 @@ function FormItem(props) {
       rules={ rules }
       defaultValue=""
       render={
-        ({ field, formState: { errors } }) => (
-          React.cloneElement(props.children, { 
-            ...field, 
-            error: !!errors[name], 
-            helperText: errors[name]?.message || '' 
-          })
-        )
+        ({ field, formState: { errors } }) => {
+          const _props = { ...field, sx, error: !!errors[name] }
+          const error_message = errors[name]?.message
+          if (error_message) _props['helperText'] = errors[name].message
+          else delete _props['helperText']
+          return React.cloneElement(props.children, _props)
+        }
       }
     />
   )

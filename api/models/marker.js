@@ -19,15 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     title: DataTypes.STRING,
     description: DataTypes.STRING,
     stamp_icon: DataTypes.STRING,
-    position: {
-      type: DataTypes.STRING,
-      get() {
-        return this.getDataValue('position').split(',')
-      },
-      set(v) {
-        this.setDataValue('position', v.join(','))
-      }
-    },
+    position: DataTypes.JSON,
     radius: DataTypes.FLOAT
   }, {
     sequelize,

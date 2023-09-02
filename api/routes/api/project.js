@@ -4,13 +4,16 @@ const router = express.Router()
 const { Op } = require('sequelize')
 
 const { sequelize, Project, Marker, Stamp, User, projectReport } = require('###/models')
-
 const { verify, authenticate } = require('##/middlewares/auth.js')
-
-const es = require('##/stores/elasticsearch.js')
-const place = require('##/stores/place.js')
-
-const { router_handler, retry } = require('##/utils.js')
+const { router_handler } = require('##/utils.js')
+const { 
+	to_positions, 
+	origin_position,
+	order_by_markers, 
+	order_by_distance, 
+	total_distance,
+	nearby
+} = require('##/lib/geo.js')
 
 router.get('/all', authenticate, router_handler(async (req, res) => {
 	const projects = await Project.findAll({ where: { public: true }, order: [['updatedAt', 'DESC']] })
@@ -41,39 +44,52 @@ router.get('/get', authenticate, router_handler(async (req, res) => {
 	return res.json(project)
 }))
 
-router.post('/generate', authenticate, router_handler(async (req, res) => {
-	const { title, description, location } = req.body
+router.post('/create', authenticate, router_handler(async (req, res) => {
+	const { title, description, position, radius } = req.body
+	let { markers } = req.body
 
-	const size = 10
-	const radius = 500
+	const MAX_SIZE = 10, RADIUS = 500, TICKET_WEIGHT = 1000
 
-	let near = await es.nearby(location, radius, size)
-	if (!near.places.length || near.latest_timestamp <= Date.now() - (1000 * 60 * 60 * 24 * 7)) {
-		const results = await place.nearby(location, radius)
-		if (results.length) {
-			await es.bulk(results, place => {
-				const { name, geometry: { location } } = place
-				return { name, location: [location.lat, location.lng].join(',') }
-			})
-			near = await retry(5, 1000, () => es.nearby(location, radius, size), result => result.places.length)
-		}
+	markers = markers.slice(0, MAX_SIZE)
+	const current_size = markers.length
+	const size = MAX_SIZE - markers.length
+
+	let center_position = position
+	let center_radius = RADIUS
+	if (current_size == 1) {
+		center_position = markers[0].position
+	} else if (current_size >= 2) {
+		const positions = to_positions(markers)
+		const geo_position = origin_position(positions)
+		center_position = geo_position.center_position
+		center_radius = geo_position.distance
 	}
 
-	if (near.places.length) {
+	const near = await nearby(center_position, center_radius, size)
+	markers = [...markers, ...near.places]
+	if (markers.length == MAX_SIZE) {
+		let positions = to_positions(markers)
+		positions = order_by_distance(positions)
+		markers = order_by_markers(markers, positions)
+		const distance = total_distance(positions)
+
 		await sequelize.transaction(async transaction => {
 			const project = await Project.create({ 
 				user_id: req.decoded.user_id, 
 				title, 
-				description 
+				description,
+				radius,
+				distance,
+				ticket: Math.min(Math.trunc(distance / TICKET_WEIGHT), 5)
 			}, { transaction })
 			
-			for (const place of near.places) {
+			for (const marker of markers) {
 				await Marker.create({
 					project_id: project.id,
-					title: place.name,
-					description: place.name,
-					position: place.location.split(','),
-					radius: 40
+					title: marker.title,
+					description: marker.description || marker.title,
+					position: marker.position,
+					radius: marker.radius || void 0
 				}, { transaction })
 			}
 		})
@@ -128,9 +144,10 @@ router.post('/report', authenticate, router_handler(async (req, res) => {
 	const is_reported = await projectReport.findOne({ where: { project_id, user_id } })
 	if (is_reported) throw Error('Already reported in this project')
 
+	const project = await Project.findOne({ where: { id: project_id } })
 	await sequelize.transaction(async transaction => {
 		const user = await User.findOne({ where: { id: user_id }, lock: true }, { transaction })
-		user.ticket += 1
+		user.ticket += project.ticket
 		await user.save({ transaction })
 		await projectReport.create({ project_id, user_id }, { transaction })
 	})
