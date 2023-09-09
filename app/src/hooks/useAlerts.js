@@ -17,7 +17,7 @@ function useAlerts(timeout) {
   }
 
   async function setCreateErrorAlert(e, message) {
-    message |= 'An unexpected error has occurred'
+    message ||= 'An unexpected error has occurred'
     if (e.name == 'AxiosError') {
       setCreateAlert(e.response?.data || message)
     } else {

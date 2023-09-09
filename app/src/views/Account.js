@@ -4,7 +4,17 @@ import {
   Grid,
   IconButton,
   Menu,
-  MenuItem
+  MenuItem,
+  Typography,
+  Dialog,
+  DialogTitle, 
+  DialogContent, 
+  DialogContentText, 
+  DialogActions, 
+  TextField,
+  Button,
+  FormControlLabel,
+  Switch
 } from '@mui/material'
 import { MoreVert } from '@mui/icons-material'
 
@@ -12,13 +22,15 @@ import UserTemplate from "@@/templates/UserTemplate"
 import { Pop, Loading } from '@@/components'
 import { getProjectUserId } from '@@/store'
 import useAlerts from '@@/hooks/useAlerts'
-import { deleteProject as storeDeleteProject } from '@@/store'
+import { deleteProject as storeDeleteProject, updateProjectPublic } from '@@/store'
 
 function Account() {
   const [anchorEl, setAnchorEl] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [project, setProject] = useState(null)
+  const [project, setProject] = useState({})
   const [projects, setProjects] = useState([])
+  const [deleteProjectTitle, setDeleteProjectTitle] = useState('')
+  const [open, setOpen] = useState(false)
 
   const [alerts, { setCreateAlert, setCreateErrorAlert }] = useAlerts()
 
@@ -43,10 +55,19 @@ function Account() {
     setProject(project)
   }
 
+  async function _delete() {
+    setOpen(true)
+  }
+
+  function inputDeleteProjectTitle(e) {
+    setDeleteProjectTitle(e.target.value)
+  }
+
   async function deleteProject() {
     try {
       await storeDeleteProject(project.id)
-      setProject(null)
+      setProject({})
+      setOpen(false)
 
       await fetch()
       setCreateAlert(`Project (${project.title}) deleted`, 'success')
@@ -55,8 +76,20 @@ function Account() {
     }
   }
 
+  async function switchProjectPublic(e) {
+    try {
+      const is_public = e.target.checked
+      await updateProjectPublic(project.id, is_public)
+      setProject({ ...project, public: is_public })
+      setProjects(projects.map(_project => ({ ..._project, public: _project.id == project.id ? is_public : _project.public })))
+      setCreateAlert(`${is_public ? 'Publish' : 'UnPublish'} your project (${project.title})`, 'success')
+    } catch (e) {
+      setCreateErrorAlert(e)
+    }
+  }
+
   function menuClose() {
-    setProject(null)
+    setProject({ public: project.public })
   }
 
   return (
@@ -119,13 +152,48 @@ function Account() {
 
       <Menu 
         anchorEl={ anchorEl }
-        open={ !!project }
+        open={ project.title }
         onClose={ menuClose }
       >
-        <MenuItem onClick={ deleteProject }>
-          Delete
+        <MenuItem>
+          <FormControlLabel 
+            label="Publish"
+            control={
+              <Switch 
+                checked={ project.public }
+                onChange={ switchProjectPublic }
+              />
+            }
+          />
+        </MenuItem>
+        <MenuItem onClick={ _delete }>
+          <Typography color="error">Delete</Typography>
         </MenuItem>
       </Menu>
+
+      <Dialog open={ open } onClose={ () => setOpen(false) }>
+        <DialogTitle>Delete a project?</DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ mb: 2 }}>Enter project title ({project?.title}) and tell me the delete button</DialogContentText>
+          <TextField 
+            variant="standard" 
+            label="Title"
+            placeholder={ project?.title }
+            fullWidth
+            required
+            onChange={ inputDeleteProjectTitle }
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button 
+            disabled={ project?.title != deleteProjectTitle }
+            onClick={ deleteProject }
+            color="error"
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   )
 }

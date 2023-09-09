@@ -77,7 +77,7 @@ router.post('/create', authenticate, router_handler(async (req, res) => {
 			const project = await Project.create({ 
 				user_id: req.decoded.user_id, 
 				title, 
-				description,
+				description: description || void 0,
 				radius,
 				distance,
 				ticket: Math.min(Math.trunc(distance / TICKET_WEIGHT), 5)
@@ -158,6 +158,13 @@ router.get('/reported', authenticate, router_handler(async (req, res) => {
 	const { project_id } = req.query
 	const reported = await projectReport.findOne({ where: { project_id, user_id } })
 	res.json(!!reported)
+}))
+
+router.post('/public', authenticate, router_handler(async (req, res) => {
+	const { user_id } = req.decoded
+	const { project_id, is_public } = req.body
+	await Project.update({ public: !!is_public }, { where: { id: project_id, user_id } })
+	res.json({})
 }))
 
 module.exports = router

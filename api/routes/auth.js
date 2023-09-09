@@ -83,7 +83,7 @@ router.get('/activate/:token', async (req, res) => {
   }
 })
 
-router.post('/signout', authenticate, router_handler((req, res) => {
+router.post('/signout', router_handler((req, res) => {
   res.clearCookie(TOKEN_COOKIE_NAME)
   res.json({})
 }))

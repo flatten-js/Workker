@@ -45,6 +45,10 @@ export async function deleteProject(project_id) {
   return await fetch('/api/project/delete', { project_id }, 'post')
 }
 
+export async function updateProjectPublic(project_id, is_public) {
+  return await fetch('/api/project/public', { project_id, is_public }, 'post')
+}
+
 export async function getMarkers(project_id) {
   return await fetch('/api/marker/all', { params: { project_id } })
 }

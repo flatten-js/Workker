@@ -23,7 +23,7 @@ async function authenticate(req, res, next) {
   } catch (e) {
     res.clearCookie(TOKEN_COOKIE_NAME)
   }
-  res.status(401).send('Invalid token.')
+  res.status(401).end()
 }
 
 module.exports = { verify, authenticate }
