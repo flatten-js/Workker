@@ -5,9 +5,10 @@ import { Progress } from '@@/components'
 function Package(props) {
   const name = props.name
   const description = props.description || ''
-  const max = props.max || 0
-  const value = props.value || 0
+  const max = parseInt(props.max) || 0
+  const value = max - (parseInt(props.value) || 0)
   const onExchange = props.onExchange || (() => {})
+  const loading = props.loading || false
 
   function lower_limit() {
     return value <= 0
@@ -34,8 +35,8 @@ function Package(props) {
         <Progress max={ max } value={ value } />
       </Box>
       
-      <Typography variant="h6" component="div" sx={{ mb: 1 }}>{ name }</Typography>
-      <Typography variant="body2" sx={{ mb: 2 }}>{ description }</Typography>
+      <Typography variant="h6" component="div">{ name }</Typography>
+      <Typography variant="body2" sx={{ mb: 4 }}>{ description }</Typography>
 
       <Stack direction="row" justifyContent="space-between">
         <Typography variant="h6">
@@ -44,7 +45,7 @@ function Package(props) {
         <Button 
           variant="outlined" 
           size="small"
-          disabled={ lower_limit(value) }
+          disabled={ loading || lower_limit(value) }
           onClick={ onExchange }
         >
           Exchange

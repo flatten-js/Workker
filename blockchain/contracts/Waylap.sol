@@ -21,7 +21,6 @@ contract Waylap is ERC721, ERC721Burnable, Ownable {
         _RevealedURI = RevealedURI;
         _notRevealedURI = notRevealedURI;
         _maxToken = maxToken;
-        _tokenIdCounter.increment();
     }
    
     function _baseURI() internal view override returns (string memory) {
@@ -29,10 +28,10 @@ contract Waylap is ERC721, ERC721Burnable, Ownable {
     }
 
     function safeMint() public onlyOwner {
+        _tokenIdCounter.increment();
         uint256 tokenId = _tokenIdCounter.current();
         require(tokenId <= _maxToken, "Token issuance limit reached");
         _safeMint(owner(), tokenId);
-        _tokenIdCounter.increment();
     }
 
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {

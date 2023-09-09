@@ -24,15 +24,6 @@ function Exchange() {
 
   const [alerts, { setCreateAlert }] = useAlerts()
 
-  async function updateUser() {
-    try {
-      const user = await getUser()
-      setUser(user)
-    } catch (e) {
-      setCreateAlert('Failed to load data.')
-    }
-  }
-
   async function fetch() {
     try {
       const packages = await getPackages()
@@ -61,7 +52,7 @@ function Exchange() {
       setExchanging(false)
     }
 
-    await updateUser()
+    await fetch()
   }
 
   return (
@@ -91,6 +82,7 @@ function Exchange() {
                           max={ _package.supply.max }
                           value={ _package.supply.total }
                           onExchange={ () => exchange(_package.id) }
+                          loading={ exchanging }
                         />
                         <Divider />
                       </ListItem>

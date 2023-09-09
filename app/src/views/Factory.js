@@ -43,7 +43,7 @@ function Factory() {
       navigator.geolocation.getCurrentPosition(position => {
         const { latitude: lat, longitude: lon } = position.coords
         res({ lat, lon })
-      }, rej, { timeout: 1000 * 2 })
+      }, rej, { timeout: 1000 * 5 })
     })
   }
 
@@ -283,7 +283,9 @@ function Factory() {
             </Typography>
             <Loading 
               loading={ !!markers.length }
-              message="No markers are currently added"
+              message={
+                Message => <Message center>No markers are currently added</Message>
+              }
             >
               <List>
                 {

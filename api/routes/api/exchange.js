@@ -32,13 +32,13 @@ router.get('/packages', authenticate, router_handler(async (req, res) => {
   packages = await Promise.all(packages.map(async package => {
     let supply = {}
     try {
-      supply.max = await web3.contract.call(package.id, 'maxSupply')
-      supply.total = await web3.contract.call(package.id, 'totalSupply')
+      supply.max = ''+(await web3.contract.call(package.id, 'maxSupply'))
+      supply.total = ''+(await web3.contract.call(package.id, 'totalSupply'))
     } catch (e) {
       console.error(e)
       supply = {}
     }
-    return { ...package, supply }
+    return { ...package.toJSON(), supply }
   }))
   res.json(packages)
 }))

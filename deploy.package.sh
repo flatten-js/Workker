@@ -47,8 +47,8 @@ do
     docker run --rm \
       -e REVEALED_URI=$REVEALED_URI -e NOT_REVEALED_URI=$NOT_REVEALED_URI \
       -e MAX_TOKEN=$MAX_TOKEN -e PRIVATE_KEY=$PRIVATE_KEY \
+      -v ./blockchain:/usr/local/src \
       -v blockchain_node_modules:/usr/local/src/node_modules \
-      -v ./blockchain/db:/usr/local/src/db \
       blockchain ./deploy.sh --network $NETWORK 2>&1
   )
 

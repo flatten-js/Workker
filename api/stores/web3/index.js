@@ -105,6 +105,14 @@ async function reveal(package, contract, token_id) {
   return result
 }
 
+function maxSupply(package_id, contract) {
+  return contract.methods.maxSupply().call()
+}
+
+function totalSupply(package_id, contract) {
+  return contract.methods.totalSupply().call()
+}
+
 async function own_nfts(user_id) {
   let nfts = await Nft.findAll({ 
     where: { user_id }, 
@@ -150,6 +158,8 @@ module.exports = {
   contract: {
     mint,
     reveal,
+    maxSupply,
+    totalSupply,
     call
   }
 }
