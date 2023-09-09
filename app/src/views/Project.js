@@ -132,7 +132,11 @@ function Project() {
                 <Grid item xs={12} sx={{ width: '100%', mb: 2 }}>
                   {
                     markers.length
-                    ? <Typography variant="h5" component="div" align="center">{markers.filter(marker => marker.Stamps.length).length}/{markers.length}</Typography>
+                    ? (
+                      <Typography variant="h5" component="div" align="center">
+                        {markers.filter(marker => marker.Stamps.length).length} / <Typography variant="h6" component="span">{markers.length}</Typography>
+                      </Typography>
+                    )
                     : <Skeleton sx={{ fontSize: theme.typography.h5.fontSize }} />
                   }
                   

@@ -66,11 +66,11 @@ export async function reveal(package_id, token_id) {
 }
 
 export async function getPackages() {
-  return await fetch('/api/booth/packages')
+  return await fetch('/api/exchange/packages')
 }
 
 export async function exchange(package_id) {
-  return await fetch('/api/booth/exchange', { package_id }, 'post')
+  return await fetch('/api/exchange', { package_id }, 'post')
 } 
 
 export async function getUser() {

@@ -7,12 +7,7 @@ const { router_handler } = require('##/utils.js')
 const { sequelize, Package, Nft, User } = require('###/models')
 const web3 = require('###/stores/web3')
 
-router.get('/packages', authenticate, router_handler(async (req, res) => {
-  const packages = await Package.findAll({ where: { disabled: false } })
-  res.json(packages)
-}))
-
-router.post('/exchange', authenticate, router_handler(async (req, res) => {
+router.post('/', authenticate, router_handler(async (req, res) => {
   const { user_id } = req.decoded
   const { package_id } = req.body
 
@@ -30,6 +25,22 @@ router.post('/exchange', authenticate, router_handler(async (req, res) => {
   await Nft.create({ user_id, package_id, token_id })
 
   res.json({})
+}))
+
+router.get('/packages', authenticate, router_handler(async (req, res) => {
+  let packages = await Package.findAll({ where: { disabled: false } })
+  packages = await Promise.all(packages.map(async package => {
+    let supply = {}
+    try {
+      supply.max = await web3.contract.call(package.id, 'maxSupply')
+      supply.total = await web3.contract.call(package.id, 'totalSupply')
+    } catch (e) {
+      console.error(e)
+      supply = {}
+    }
+    return { ...package, supply }
+  }))
+  res.json(packages)
 }))
 
 module.exports = router

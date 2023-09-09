@@ -14,7 +14,7 @@ import {
 
 import UserTemplate from "@@/templates/UserTemplate"
 import useAlerts from '@@/hooks/useAlerts'
-import { Loading } from '@@/components'
+import { Loading, Package } from '@@/components'
 import { getPackages, exchange as _exchange, getUser } from '@@/store'
 
 function Exchange() {
@@ -85,21 +85,14 @@ function Exchange() {
                   ? (
                     packages.map(_package => (
                       <ListItem key={ _package.id }>
-                        <Box sx={{ width: '100%' }}>
-                          <Typography variant="subtitle2">{ _package.name }</Typography>
-                          <Typography variant="body2" sx={{ mb: 2 }}>{ _package.description }</Typography>
-                          <Box sx={{ textAlign: 'right', mb: 2 }}>
-                            <Button 
-                              sx={{ ml: 'auto' }}
-                              variant="outlined"
-                              disabled={ _package.require_ticket > user.ticket || exchanging } 
-                              onClick={ () => exchange(_package.id) }
-                            >
-                              Exchange
-                            </Button>
-                          </Box>
-                          <Divider />
-                        </Box>
+                        <Package 
+                          name={ _package.name }
+                          description={ _package.description }
+                          max={ _package.supply.max }
+                          value={ _package.supply.total }
+                          onExchange={ () => exchange(_package.id) }
+                        />
+                        <Divider />
                       </ListItem>
                     ))
                   )

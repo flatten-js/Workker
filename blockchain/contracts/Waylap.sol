@@ -55,4 +55,12 @@ contract Waylap is ERC721, ERC721Burnable, Ownable {
         _requireMinted(tokenId);
         return revealed[tokenId];
     }
+
+    function maxSupply() public view returns (uint256) {
+        return _maxToken;
+    }
+
+    function totalSupply() public view returns (uint256) {
+        return _tokenIdCounter.current();
+    }
 }

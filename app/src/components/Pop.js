@@ -108,7 +108,7 @@ function Pop(props) {
                   </Box>
                 </Stack>
                 
-                <Button variant="contained" component={ Link } to={ `/${id}` }>Try</Button>
+                <Button variant="outlined" component={ Link } to={ `/${id}` }>Try</Button>
               </>
             )
             : (
