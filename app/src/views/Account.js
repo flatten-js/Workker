@@ -116,6 +116,7 @@ function Account() {
                       title={ project.title } 
                       description={ project.description }
                       image={ project.image }
+                      distance={ project.distance }
                       loaded
                     />
                     <IconButton 

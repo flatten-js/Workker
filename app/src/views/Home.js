@@ -45,6 +45,7 @@ function Home() {
                       title={ project.title } 
                       description={ project.description }
                       image={ project.image }
+                      distance={ project.distance }
                       loaded
                     />
                   </Grid>
