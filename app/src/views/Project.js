@@ -134,7 +134,7 @@ function Project() {
                     markers.length
                     ? (
                       <Typography variant="h5" component="div" align="center">
-                        {markers.filter(marker => marker.Stamps.length).length} / <Typography variant="h6" component="span">{markers.length}</Typography>
+                        {markers.filter(marker => marker.Stamps.length).length} <Typography variant="h6" component="span">/ {markers.length}</Typography>
                       </Typography>
                     )
                     : <Skeleton sx={{ fontSize: theme.typography.h5.fontSize }} />

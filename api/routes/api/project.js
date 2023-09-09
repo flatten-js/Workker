@@ -45,29 +45,33 @@ router.get('/get', authenticate, router_handler(async (req, res) => {
 }))
 
 router.post('/create', authenticate, router_handler(async (req, res) => {
-	const { title, description, position, radius } = req.body
+	const { title, description, position, radius, allocate } = req.body
 	let { markers } = req.body
 
 	const MAX_SIZE = 10, RADIUS = 500, TICKET_WEIGHT = 1000
 
 	markers = markers.slice(0, MAX_SIZE)
-	const current_size = markers.length
-	const size = MAX_SIZE - markers.length
 
-	let center_position = position
-	let center_radius = RADIUS
-	if (current_size == 1) {
-		center_position = markers[0].position
-	} else if (current_size >= 2) {
-		const positions = to_positions(markers)
-		const geo_position = origin_position(positions)
-		center_position = geo_position.center_position
-		center_radius = geo_position.distance
+	if (allocate) {
+		const current_size = markers.length
+		const size = MAX_SIZE - markers.length
+
+		let center_position = position
+		let center_radius = RADIUS
+		if (current_size == 1) {
+			center_position = markers[0].position
+		} else if (current_size >= 2) {
+			const positions = to_positions(markers)
+			const geo_position = origin_position(positions)
+			center_position = geo_position.center_position
+			center_radius = geo_position.distance
+		}
+
+		const near = await nearby(center_position, center_radius, size)
+		markers = [...markers, ...near.places]
 	}
 
-	const near = await nearby(center_position, center_radius, size)
-	markers = [...markers, ...near.places]
-	if (markers.length == MAX_SIZE) {
+	if (markers.length) {
 		let positions = to_positions(markers)
 		positions = order_by_distance(positions)
 		markers = order_by_markers(markers, positions)

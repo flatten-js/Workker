@@ -10,7 +10,10 @@ import {
   Button,
   TextField,
   Box,
-  IconButton
+  IconButton,
+  FormControlLabel,
+  Checkbox,
+
 } from '@mui/material'
 import { EditLocationAlt, Delete } from '@mui/icons-material'
 
@@ -21,6 +24,9 @@ import { createProject } from '@@/store'
 
 let i = 0
 function Factory() {
+  const MAX_SIZE = 10
+
+  const [allocate, setAllocate] = useState(false) 
   const [_default, setDefault] = useState({ radius: 20 })
   const [markers, setMarkers] = useState([])
   const [editMarker, setEditMarker] = useState({})
@@ -49,7 +55,7 @@ function Factory() {
         const [lat, lon] = marker.position.split(',')
         return { ...marker, position: { lat, lon } }
       })
-      await createProject({ ...data, ..._default, position, markers: _markers })
+      await createProject({ ...data, ..._default, position, markers: _markers, allocate })
       setCreateAlert('Successfully created project', 'success')
     } catch (e) {
       setCreateAlert('Failed to create project')
@@ -94,137 +100,159 @@ function Factory() {
     setMarkers(_markers)
   }
 
+  function CreateButton() {
+    return (
+      <Button 
+        onClick={ projectHandleSubmit(create) }
+        disabled={ loading || (!allocate && !markers.length) }
+        sx={{ display: 'block', ml: 'auto' }}
+      >
+        Create
+      </Button>
+    )
+  }
+
   return (
     <UserTemplate alerts={ alerts }>
       <Paper sx={{ width: '100%', minHeight: '100%', p: 4 }}>
         <Grid container spacing={2} sx={{ height: '100%' }}>
           <Grid item sm={12} md={6} sx={{ width: '100%' }}>
             <Box sx={{ mb: 2, p: 2 }}>
-              <Typography variant="subtitle2" sx={{ mb: 2 }}>Project</Typography>
-              <FormItem
-                name="title" 
-                control={ projectControl } 
-                rules={{
-                  required: 'Please enter a title for your project'
-                }}
-                sx={{ mb: 2 }}
-              >
-                <TextField
-                  variant="standard" 
-                  label="Title"
-                  defaultValue=""
-                  fullWidth
-                  required
+              <Box sx={{ mb: 4 }}>
+                <Typography>Allocates automatically the missing up to the maximum number of markers ({MAX_SIZE} markers)</Typography>
+                <FormControlLabel 
+                  control={ <Checkbox onChange={ e => setAllocate(e.target.checked) } /> } 
+                  label="yes"
                 />
-              </FormItem>
-              <FormItem
-                name="description" 
-                control={ projectControl } 
-                sx={{ mb: 2 }}
-              >
-                <TextField
-                  variant="standard" 
-                  label="Description"
-                  defaultValue=""
-                  fullWidth
-                />
-              </FormItem>
-              <Button 
-                sx={{ display: 'block', ml: 'auto', mb: 2 }}
-                onClick={ projectHandleSubmit(create) }
-                disabled={ loading }
-              >
-                Create
-              </Button>
-              <Typography variant="subtitle2" sx={{ mb: 2 }}>Default</Typography>
-              <FormItem
-                name="radius" 
-                control={ defaultControl } 
-                rules={{
-                  required: 'Please enter a radius for your marker',
-                  validate: v => !v || (v > 0 && v <= 50) || 'Only 1 to 50 can be entered'
-                }}
-                sx={{ mb: 2 }}
-              >
-                <TextField
-                  variant="standard" 
-                  type="number"
-                  label="Radius"
-                  defaultValue=""
-                  fullWidth
-                  required
-                />
-              </FormItem>
-              <Button 
-                sx={{ display: 'block', ml: 'auto', mb: 2 }}
-                onClick={ defaultHandleSubmit(apply) }
-              >
-                Apply
-              </Button>
-              <FormItem
-                name="title" 
-                control={ control } 
-                rules={{
-                  required: 'Please enter a title for your marker'
-                }}
-                sx={{ mb: 2 }}
-              >
-                <TextField
-                  variant="standard" 
-                  label="Title"
-                  defaultValue=""
-                  fullWidth
-                  required
-                />
-              </FormItem>
-              <FormItem
-                name="description" 
-                control={ control } 
-                sx={{ mb: 2 }}
-              >
-                <TextField
-                  variant="standard" 
-                  label="Description"
-                  defaultValue=""
-                  fullWidth
-                />
-              </FormItem>
-              <FormItem
-                name="position" 
-                control={ control } 
-                rules={{
-                  required: 'Please enter a potision for your marker',
-                  validate: v => /-?[\d.]+,-?[\d.]+/.test(v) || 'Only lat,lng format'
-                }}
-                sx={{ mb: 2 }}
-              >
-                <TextField
-                  variant="standard" 
-                  label="Position"
-                  helperText="Format: lat,lng"
-                  defaultValue=""
-                  fullWidth
-                  required
-                />
-              </FormItem>
-              <FormItem
-                name="radius" 
-                control={ control } 
-                rules={{
-                  validate: async v => {
-                    return !v || (v > 0 && v <= 50) || 'Only 1 to 50 can be entered'
-                  }
-                }}
-                sx={{ mb: 4 }}
-              >
-                <TextField
-                  variant="standard"
-                  type="number" 
-                  label="Radius"
-                  defaultValue=""
-                  fullWidth
-                />
-              </FormItem>
+              </Box>
+  
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="subtitle2" sx={{ mb: 2 }}>Project</Typography>
+                <FormItem
+                  name="title" 
+                  control={ projectControl } 
+                  rules={{
+                    required: 'Please enter a title for your project'
+                  }}
+                  sx={{ mb: 2 }}
+                >
+                  <TextField
+                    variant="standard" 
+                    label="Title"
+                    defaultValue=""
+                    fullWidth
+                    required
+                  />
+                </FormItem>
+                <FormItem
+                  name="description" 
+                  control={ projectControl } 
+                  sx={{ mb: 2 }}
+                >
+                  <TextField
+                    variant="standard" 
+                    label="Description"
+                    defaultValue=""
+                    fullWidth
+                  />
+                </FormItem>
+                <CreateButton />
+              </Box>
+            
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="subtitle2" sx={{ mb: 2 }}>Default</Typography>
+                <FormItem
+                  name="radius" 
+                  control={ defaultControl } 
+                  rules={{
+                    required: 'Please enter a radius for your marker',
+                    validate: v => !v || (v > 0 && v <= 50) || 'Only 1 to 50 can be entered'
+                  }}
+                  sx={{ mb: 2 }}
+                >
+                  <TextField
+                    variant="standard" 
+                    type="number"
+                    label="Radius"
+                    defaultValue=""
+                    fullWidth
+                    required
+                  />
+                </FormItem>
+                <Button 
+                  sx={{ display: 'block', ml: 'auto' }}
+                  onClick={ defaultHandleSubmit(apply) }
+                >
+                  Apply
+                </Button>
+              </Box>
+
+              <Box sx={{ mb: 4 }}>
+                <FormItem
+                  name="title" 
+                  control={ control } 
+                  rules={{
+                    required: 'Please enter a title for your marker'
+                  }}
+                  sx={{ mb: 2 }}
+                >
+                  <TextField
+                    variant="standard" 
+                    label="Title"
+                    defaultValue=""
+                    fullWidth
+                    required
+                  />
+                </FormItem>
+                <FormItem
+                  name="description" 
+                  control={ control } 
+                  sx={{ mb: 2 }}
+                >
+                  <TextField
+                    variant="standard" 
+                    label="Description"
+                    defaultValue=""
+                    fullWidth
+                  />
+                </FormItem>
+                <FormItem
+                  name="position" 
+                  control={ control } 
+                  rules={{
+                    required: 'Please enter a potision for your marker',
+                    validate: v => /-?[\d.]+,-?[\d.]+/.test(v) || 'Only lat,lng format'
+                  }}
+                  sx={{ mb: 2 }}
+                >
+                  <TextField
+                    variant="standard" 
+                    label="Position"
+                    helperText="Format: lat,lng"
+                    defaultValue=""
+                    fullWidth
+                    required
+                  />
+                </FormItem>
+                <FormItem
+                  name="radius" 
+                  control={ control } 
+                  rules={{
+                    validate: async v => {
+                      return !v || (v > 0 && v <= 50) || 'Only 1 to 50 can be entered'
+                    }
+                  }}
+                >
+                  <TextField
+                    variant="standard"
+                    type="number" 
+                    label="Radius"
+                    defaultValue=""
+                    fullWidth
+                  />
+                </FormItem>
+              </Box>
+              
               {
                 Object.keys(editMarker).length
                 ? (
@@ -240,6 +268,7 @@ function Factory() {
                   <Button 
                     sx={{ display: 'block', ml: 'auto' }}
                     onClick={ handleSubmit(add) }
+                    disabled={ markers.length >= MAX_SIZE }
                   >
                     Add
                   </Button>
@@ -248,7 +277,10 @@ function Factory() {
               
             </Box>
 
-            <Typography variant="subtitle2">Markers</Typography>
+            <Typography variant="subtitle2" sx={{ mb: 1 }}>Markers</Typography>
+            <Typography variant="h6" component="div" sx={{ textAlign: 'center', mb: 1 }}>
+              { markers.length } <Typography variant="body2" component="span">/ { MAX_SIZE }</Typography>
+            </Typography>
             <Loading 
               loading={ !!markers.length }
               message="No markers are currently added"
@@ -288,13 +320,7 @@ function Factory() {
           </Grid>
         </Grid>
 
-        <Button 
-          sx={{ display: 'block', ml: 'auto' }}
-          onClick={ projectHandleSubmit(create) }
-          disabled={ loading }
-        >
-          Create
-        </Button>
+        <CreateButton />
       </Paper>
     </UserTemplate>
   )

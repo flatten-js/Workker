@@ -37,10 +37,6 @@ export async function createProject(data) {
   return await fetch('/api/project/create', data, 'post')
 }
 
-export async function generateProject(data) {
-  return await fetch('/api/project/generate', data, 'post')
-}
-
 export async function deleteProject(project_id) {
   return await fetch('/api/project/delete', { project_id }, 'post')
 }
