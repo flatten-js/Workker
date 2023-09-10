@@ -3,13 +3,7 @@ import { useState, useEffect } from 'react'
 import {
   Grid, 
   Paper,
-  List,
-  ListSubheader,
-  ListItem,
-  Button,
-  Typography,
-  Divider,
-  Box
+  Typography
 } from '@mui/material'
 
 import UserTemplate from "@@/templates/UserTemplate"
@@ -21,17 +15,21 @@ function Exchange() {
   const [user, setUser] = useState({})
   const [packages, setPackages] = useState([])
   const [exchanging, setExchanging] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   const [alerts, { setCreateAlert }] = useAlerts()
 
   async function fetch() {
     try {
+      setLoading(true)
       const packages = await getPackages()
       const user = await getUser()
       setPackages(packages)
       setUser(user)
     } catch (e) {
       setCreateAlert('Failed to load data.')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -59,47 +57,38 @@ function Exchange() {
     <UserTemplate alerts={ alerts }>
       <Grid container>
         <Grid item xs={12}>          
-          <Paper>
-            <Box sx={{ p: 4  }}>
+          <Typography variant="h6" sx={{ mb: 4, textAlign: 'center' }}>
+            Your Ticket: { user.ticket || '-' }
+          </Typography>
 
-              <Typography variant="h6">
-                Your Ticket: { user.ticket }
-              </Typography>
-            </Box>
-
-            <Divider sx={{ borderStyle: 'dashed' }} />
-
-            <Box sx={{ p: 4  }}>
-              <List subheader={ <ListSubheader>Packages</ListSubheader> }>
-                {
-                  packages.length
-                  ? (
-                    packages.map(_package => (
-                      <ListItem key={ _package.id }>
-                        <Package 
-                          name={ _package.name }
-                          description={ _package.description }
-                          max={ _package.supply.max }
-                          value={ _package.supply.total }
-                          onExchange={ () => exchange(_package.id) }
-                          loading={ exchanging }
-                        />
-                        <Divider />
-                      </ListItem>
-                    ))
-                  )
-                  : (
-                    <ListItem>
-                      <Loading 
-                        loading={ !!packages.length } 
-                        message="No publicly available packages available for exchange" 
-                      />
-                    </ListItem>
-                  )
-                }
-              </List>
-            </Box>
-          </Paper>
+          {
+            packages.length
+            ? (
+              packages.map(_package => (
+                <Paper sx={{ p: 4, mb: 2 }} key={ _package.id }>
+                  <Package 
+                    name={ _package.name }
+                    description={ _package.description }
+                    max={ _package.supply.max }
+                    value={ _package.supply.total }
+                    onExchange={ () => exchange(_package.id) }
+                    loading={ exchanging }
+                    loaded
+                  />
+                </Paper>
+              ))
+            )
+            : (
+              <Loading 
+                loading={ loading } 
+                message="No publicly available packages available for exchange" 
+              >
+                <Paper sx={{ p: 4 }}>
+                  <Package />
+                </Paper>
+              </Loading>
+            )
+          }
         </Grid>
       </Grid>
     </UserTemplate>

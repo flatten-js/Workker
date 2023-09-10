@@ -33,7 +33,7 @@ function NFT(props) {
         {
           loaded
           ? <Typography variant="subtitle2">{ metadata?.name || name }</Typography>
-          : <Skeleton  sx={{ fontSize: theme => theme.typography.body2.fontSize }} />
+          : <Skeleton sx={{ fontSize: theme => theme.typography.body2.fontSize }} />
         }
         
       </CardContent>
