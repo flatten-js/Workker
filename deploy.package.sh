@@ -60,7 +60,9 @@ do
 
   echo "Successfully deployed"
   echo "  account: $ACCOUNT"
-  echo "  private_key: $PRIVATE_KEY" 
+  if [ $NETWORK == $NETWORK_DEVELOPMENT ]; then
+    echo "  private_key: $PRIVATE_KEY" 
+  fi
   echo "  contract address: $CONTRACT_ADDRESS"
 
   docker-compose up -d api > /dev/null 2>&1
