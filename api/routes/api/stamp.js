@@ -1,10 +1,12 @@
 const express = require('express')
 const router = express.Router()
 
+const geolib = require('geolib')
+
 const { authenticate } = require('##/middlewares/auth.js')
 
 const { Marker, Project, Stamp } = require('###/models')
-const { router_handler, hybeny_distance } = require('##/utils.js')
+const { router_handler } = require('##/utils.js')
 
 router.post('/add', authenticate, router_handler(async (req, res) => {
   const { marker_id, position } = req.body
@@ -22,7 +24,7 @@ router.post('/add', authenticate, router_handler(async (req, res) => {
 
   let created = false
 
-  const distance = hybeny_distance(...marker.position, ...position)
+  const distance = geolib.getPreciseDistance(marker.position, position)
   if (distance <= (marker.radius || marker.Project.radius)) {
     await Stamp.create({ marker_id, user_id: req.decoded.user_id })
     created = true
