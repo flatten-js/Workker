@@ -155,6 +155,8 @@ router.post('/report', authenticate, router_handler(async (req, res) => {
 		await user.save({ transaction })
 		await projectReport.create({ project_id, user_id }, { transaction })
 	})
+
+	res.json({})
 }))
 
 router.get('/reported', authenticate, router_handler(async (req, res) => {

@@ -26,6 +26,7 @@ function Project() {
   const [markers, setMarkers] = useState([])
   const [reported, setReported] = useState(true)
   const [position, setPosition] = useState(null)
+  const [repoting, setReporting] = useState(false)
   const [dialog, setDialog] = useState({})
 
   const [alerts, { setCreateAlert, setCreateErrorAlert }] = useAlerts()
@@ -89,10 +90,14 @@ function Project() {
 
   async function report() {
     try {
+      setReporting(true)
       await reportProject(project_id)
+      setReported(true)
       setCreateAlert('Report successfully reported', 'success')
     } catch (e) {
       setCreateErrorAlert(e)
+    } finally {
+      setReporting(false)
     }
   }
 
@@ -115,7 +120,7 @@ function Project() {
               <Button 
                 variant="outlined" 
                 sx={{ display: 'block', mb: 2, ml: 'auto' }}
-                disabled={ markers.filter(marker => marker.Stamps.length).length != markers.length }
+                disabled={ repoting || !markers.every(marker => marker.Stamps.length) }
                 onClick={ report }
               >
                 Report
