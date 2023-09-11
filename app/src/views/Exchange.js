@@ -56,26 +56,30 @@ function Exchange() {
   return (
     <UserTemplate alerts={ alerts }>
       <Grid container>
-        <Grid item xs={12}>          
+        <Grid item xs={12}>       
           <Typography variant="h6" sx={{ mb: 4, textAlign: 'center' }}>
             Your Ticket: { user.ticket || '-' }
           </Typography>
+        </Grid>
 
+        <Grid container item>
           {
             packages.length
             ? (
               packages.map(_package => (
-                <Paper sx={{ p: 4, mb: 2 }} key={ _package.id }>
-                  <Package 
-                    name={ _package.name }
-                    description={ _package.description }
-                    max={ _package.supply.max }
-                    value={ _package.supply.total }
-                    onExchange={ () => exchange(_package.id) }
-                    loading={ exchanging }
-                    loaded
-                  />
-                </Paper>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Paper sx={{ p: 4, mb: 4 }} key={ _package.id }>
+                    <Package 
+                      name={ _package.name }
+                      description={ _package.description }
+                      max={ _package.supply.max }
+                      value={ _package.supply.total }
+                      onExchange={ () => exchange(_package.id) }
+                      loading={ exchanging }
+                      loaded
+                    />
+                  </Paper>
+                </Grid>
               ))
             )
             : (
@@ -83,9 +87,11 @@ function Exchange() {
                 loading={ loading } 
                 message="No publicly available packages available for exchange" 
               >
-                <Paper sx={{ p: 4 }}>
-                  <Package />
-                </Paper>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Paper sx={{ p: 4 }}>
+                    <Package />
+                  </Paper>
+                </Grid>
               </Loading>
             )
           }

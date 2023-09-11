@@ -4,7 +4,7 @@ import { Progress } from '@@/components'
 
 function Package(props) {
   const name = props.name
-  const description = props.description || ''
+  const description = props.description || 'There is no description in this package'
   const max = parseInt(props.max) || 0
   const value = max - (parseInt(props.value) || 0)
   const onExchange = props.onExchange || (() => {})
@@ -17,7 +17,7 @@ function Package(props) {
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Box sx={{ mb: 4 }}>
+      <Box sx={{ mb: 2 }}>
           {
             loaded
             ? (
@@ -43,7 +43,7 @@ function Package(props) {
           }
       </Box>
       
-      <Box sx={{ mb: 4 }}>
+      <Box sx={{ mb: 6 }}>
         {
           loaded
           ? (
@@ -61,7 +61,7 @@ function Package(props) {
         }
       </Box>
 
-      <Stack direction="row" justifyContent="space-between">
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
         {
           loaded
           ? (
@@ -70,8 +70,7 @@ function Package(props) {
                 1 <Typography variant="subtitle2" component="span">Ticket</Typography>
               </Typography>
               <Button 
-                variant="outlined" 
-                size="small"
+                variant="contained"
                 disabled={ loading || lower_limit(value) }
                 onClick={ onExchange }
               >

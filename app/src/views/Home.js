@@ -39,7 +39,7 @@ function Home() {
             ? (
               projects.map(project => {
                 return (
-                  <Grid item xs={12} sm={6} md={4} lg={3} key={ project.id }>
+                  <Grid item xs={12} sm={6} md={4} key={ project.id }>
                     <Pop 
                       id={ project.id } 
                       title={ project.title } 
