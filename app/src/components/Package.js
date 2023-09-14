@@ -7,6 +7,7 @@ function Package(props) {
   const description = props.description || 'There is no description in this package'
   const max = parseInt(props.max) || 0
   const value = max - (parseInt(props.value) || 0)
+  const disabled = props.disabled || false
   const onExchange = props.onExchange || (() => {})
   const loading = props.loading || false
   const loaded = props.loaded || false
@@ -71,7 +72,7 @@ function Package(props) {
               </Typography>
               <Button 
                 variant="contained"
-                disabled={ loading || lower_limit(value) }
+                disabled={ disabled || loading || lower_limit(value) }
                 onClick={ onExchange }
               >
                 Exchange

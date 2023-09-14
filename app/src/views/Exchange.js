@@ -58,7 +58,7 @@ function Exchange() {
       <Grid container>
         <Grid item xs={12}>       
           <Typography variant="h6" sx={{ mb: 4, textAlign: 'center' }}>
-            Your Ticket: { user.ticket || '-' }
+            Your Ticket: { user.ticket ?? '-' }
           </Typography>
         </Grid>
 
@@ -74,6 +74,7 @@ function Exchange() {
                       description={ _package.description }
                       max={ _package.supply.max }
                       value={ _package.supply.total }
+                      disabled={ !user.ticket }
                       onExchange={ () => exchange(_package.id) }
                       loading={ exchanging }
                       loaded

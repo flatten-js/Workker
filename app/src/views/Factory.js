@@ -119,7 +119,7 @@ function Factory() {
           <Grid item sm={12} md={6} sx={{ width: '100%' }}>
             <Box sx={{ mb: 2, p: 2 }}>
               <Box sx={{ mb: 4 }}>
-                <Typography>Allocates automatically the missing up to the maximum number of markers ({MAX_SIZE} markers)</Typography>
+                <Typography>Allocates automatically the missing up to the maximum number of markers</Typography>
                 <FormControlLabel 
                   control={ <Checkbox onChange={ e => setAllocate(e.target.checked) } /> } 
                   label="yes"
