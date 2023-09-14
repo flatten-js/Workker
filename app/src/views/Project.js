@@ -7,7 +7,6 @@ import {
   Dialog, 
   DialogTitle, 
   DialogContent, 
-  DialogContentText, 
   DialogActions, 
   Button,
   Skeleton
@@ -179,7 +178,7 @@ function Project() {
       <Dialog open={ !!Object.keys(dialog).length }>
         <DialogTitle>Get a stamp!</DialogTitle>
         <DialogContent>
-          <DialogContentText sx={{ textAlign: 'center' }}>{ dialog.title }</DialogContentText>
+          <Typography variant="body2" sx={{ textAlign: 'center' }}>{ dialog.title }</Typography>
         </DialogContent> 
         <DialogActions>
           <Button onClick={ onDialogClose }>OK</Button>

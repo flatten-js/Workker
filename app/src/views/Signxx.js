@@ -8,7 +8,6 @@ import {
   Dialog, 
   DialogTitle,
   DialogContent,
-  DialogContentText,
   DialogActions,
   Button 
 } from '@mui/material'
@@ -77,10 +76,10 @@ function Signxx(props) {
       <Dialog open={ open }>
         <DialogTitle>Activate your account</DialogTitle>
         <DialogContent>
-          <DialogContentText>
+          <Typography variant="body2">
             An account confirmation email has been sent.
             Please click the confirmation URL in the confirmation email to activate your account.
-          </DialogContentText>
+          </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={ onDialogClose }>Close</Button>

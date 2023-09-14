@@ -3,7 +3,7 @@ const router = express.Router()
 
 const { Op } = require('sequelize')
 
-const { sequelize, Project, Marker, Stamp, User, projectReport } = require('###/models')
+const { sequelize, Project, Marker, Stamp, User, ProjectReport } = require('###/models')
 const { verify, authenticate } = require('##/middlewares/auth.js')
 const { router_handler } = require('##/utils.js')
 const { 
@@ -20,13 +20,69 @@ router.get('/all', authenticate, router_handler(async (req, res) => {
 	return res.json(projects)
 }))
 
-router.get('/user_id', authenticate, router_handler(async (req, res) => {
-	const projects = await Project.findAll({ where: { user_id: req.decoded.user_id }, order: [['updatedAt', 'DESC']] })
+router.get('/my', authenticate, router_handler(async (req, res) => {
+	const _public = req.query.public
+
+	const projects = await Project.findAll({ 
+		where: { 
+			user_id: req.decoded.user_id,
+			...(_public != void 0 ? { public: JSON.parse(_public) } : {})
+		}, 
+		order: [['updatedAt', 'DESC']] 
+	})
+
+	return res.json(projects)
+}))
+
+router.get('/trying', authenticate, router_handler(async (req, res) => {
+	const { user_id } = req.decoded
+	
+	const models = await Stamp.findAll({
+		attributes: [],
+		where: { user_id },
+		include: [
+			{
+				model: Marker,
+				attributes: [],
+				include: [
+					{ model: Project }
+				]
+			}
+		],
+		group: ['Marker.Project.id'],
+		nest: true,
+		raw: true
+	})
+
+	const reports = await ProjectReport.findAll({
+		attributes: ['project_id'],
+		where: { user_id }
+	})
+
+	const projects = models
+		.map(model => model.Marker.Project)
+		.filter(project => reports.every(report => report.project_id != project.id))
+		
+	res.json(projects)
+}))
+
+router.get('/reported', authenticate, router_handler(async (req, res) => {
+	const models = await ProjectReport.findAll({
+		attributes: [], 
+		where: { user_id: req.decoded.user_id }, 
+		include: [
+			{ model: Project }
+		],
+		order: [['updatedAt', 'DESC']],
+		nest: true,
+		raw: true
+	})
+	
+	const projects = models.map(model => model.Project)
 	return res.json(projects)
 }))
 
 router.get('/get', authenticate, router_handler(async (req, res) => {
-	const decoded = verify(req)
 	const project = await Project.findOne({ 
 		where: { 
 			id: req.query.project_id,
@@ -36,7 +92,7 @@ router.get('/get', authenticate, router_handler(async (req, res) => {
 				},
 				{
 					public: false,
-					user_id: decoded?.user_id
+					user_id: req.decoded.user_id
 				}
 			]
 		} 
@@ -145,7 +201,7 @@ router.post('/report', authenticate, router_handler(async (req, res) => {
 		return res.status(500).send('There are some spots that are not stamped')
 	}
 
-	const is_reported = await projectReport.findOne({ where: { project_id, user_id } })
+	const is_reported = await ProjectReport.findOne({ where: { project_id, user_id } })
 	if (is_reported) throw Error('Already reported in this project')
 
 	const project = await Project.findOne({ where: { id: project_id } })
@@ -153,7 +209,7 @@ router.post('/report', authenticate, router_handler(async (req, res) => {
 		const user = await User.findOne({ where: { id: user_id }, lock: true }, { transaction })
 		user.ticket += project.ticket
 		await user.save({ transaction })
-		await projectReport.create({ project_id, user_id }, { transaction })
+		await ProjectReport.create({ project_id, user_id }, { transaction })
 	})
 
 	res.json({})
@@ -162,7 +218,7 @@ router.post('/report', authenticate, router_handler(async (req, res) => {
 router.get('/reported', authenticate, router_handler(async (req, res) => {
 	const { user_id } = req.decoded
 	const { project_id } = req.query
-	const reported = await projectReport.findOne({ where: { project_id, user_id } })
+	const reported = await ProjectReport.findOne({ where: { project_id, user_id } })
 	res.json(!!reported)
 }))
 
@@ -170,6 +226,26 @@ router.post('/public', authenticate, router_handler(async (req, res) => {
 	const { user_id } = req.decoded
 	const { project_id, is_public } = req.body
 	await Project.update({ public: !!is_public }, { where: { id: project_id, user_id } })
+	res.json({})
+}))
+
+router.post('/drop', authenticate, router_handler(async (req, res) => {
+	const markers = await Marker.findAll({
+		attributes: ['id'],
+		where: {
+			project_id: req.body.project_id
+		}
+	})
+
+	await Stamp.destroy({
+		where: {
+			user_id: req.decoded.user_id,
+			marker_id: {
+				[Op.in]: markers.map(marker => marker.id)
+			}
+		}
+	})
+
 	res.json({})
 }))
 

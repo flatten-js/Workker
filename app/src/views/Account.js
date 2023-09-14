@@ -8,21 +8,29 @@ import {
   Typography,
   Dialog,
   DialogTitle, 
-  DialogContent, 
-  DialogContentText, 
+  DialogContent,  
   DialogActions, 
   TextField,
   Button,
   FormControlLabel,
-  Switch
+  Switch,
+  Chip,
+  Stack,
+  Divider
 } from '@mui/material'
 import { MoreVert } from '@mui/icons-material'
 
 import UserTemplate from "@@/templates/UserTemplate"
 import { Pop, Loading } from '@@/components'
-import { getProjectUserId } from '@@/store'
 import useAlerts from '@@/hooks/useAlerts'
-import { deleteProject as storeDeleteProject, updateProjectPublic } from '@@/store'
+import {
+  getProjectMy,
+  getProjectTrying,
+  getProjectReported,
+  deleteProject, 
+  dropProject,
+  updateProjectPublic 
+} from '@@/store'
 
 function Account() {
   const [anchorEl, setAnchorEl] = useState(null)
@@ -30,14 +38,132 @@ function Account() {
   const [project, setProject] = useState({})
   const [projects, setProjects] = useState([])
   const [deleteProjectTitle, setDeleteProjectTitle] = useState('')
-  const [open, setOpen] = useState(false)
+  const [dialog, setDialog] = useState(false)
+  const [tab, setTab] = useState(0)
 
   const [alerts, { setCreateAlert, setCreateErrorAlert }] = useAlerts()
 
-  async function fetch() {
+  const MENU_DELETE = 'delete'
+  const MENU_DROP = 'drop'
+  const MENU_PUBLIC = 'public'
+
+  const DIALOGS = {
+    [MENU_DELETE]: (
+      <>
+        <DialogTitle>Delete a project?</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" sx={{ mb: 2 }}>Enter project title ({project?.title}) and tell me the delete button</Typography>
+          <TextField 
+            variant="standard" 
+            label="Title"
+            placeholder={ project?.title }
+            fullWidth
+            required
+            onChange={ inputDeleteProjectTitle }
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button 
+            disabled={ project?.title != deleteProjectTitle }
+            onClick={ onDeleteProject }
+            color="error"
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </>
+    ),
+    [MENU_DROP]: (
+      <>
+        <DialogTitle>Drop a project?</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2">
+            Dropping will result in loss of progress on this project. Do you really want to drop the project?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button 
+            onClick={ onDropProject }
+            color="error"
+          >
+            Drop
+          </Button>
+        </DialogActions>
+      </>
+    )
+  }
+
+  const MENUS = [
+    {
+      label: MENU_PUBLIC,
+      Item: props => (
+        <MenuItem>
+          <FormControlLabel 
+            label="Publish"
+            control={
+              <Switch 
+                checked={ project.public }
+                onChange={ onSwitchProjectPublic }
+              />
+            }
+          />
+        </MenuItem>
+      )
+    },
+    { 
+      label: MENU_DELETE,
+      Item: props => (
+        <MenuItem onClick={ () => setDialog(MENU_DELETE) }>
+          <Typography color="error">Delete</Typography>
+        </MenuItem>
+      )
+    },
+    {
+      label: MENU_DROP,
+      Item: props => (
+        <MenuItem onClick={ () => setDialog(MENU_DROP) }>
+          <Typography color="error">Drop</Typography>
+        </MenuItem>
+      )
+    }
+  ]
+
+  const TABS = [
+    { 
+      menus: [MENU_PUBLIC, MENU_DELETE], 
+      label: 'All', 
+      get: getProjectMy 
+    },
+    { 
+      menus: [MENU_PUBLIC, MENU_DELETE], 
+      label: 'Public', 
+      get: async () => getProjectMy({ public: true }) 
+    },
+    {
+      menus: [MENU_PUBLIC, MENU_DELETE],
+      label: 'Private', 
+      get: async () => getProjectMy({ public: false }) 
+    },
+    '-',
+    { 
+      menus: [MENU_DROP],
+      label: 'Trying', 
+      get: getProjectTrying 
+    },
+    { 
+      label: 'Reported', 
+      get: getProjectReported 
+    }
+  ]
+
+  function changeTab(i) {
+    setTab(i)
+  }
+
+  async function getProjects(tab) {
     try {
       setLoading(true)
-      const projects = await getProjectUserId()
+      const projects = await TABS[tab].get()
       setProjects(projects)
     } catch (e) {
       setCreateAlert('Failed to load data.')
@@ -45,58 +171,108 @@ function Account() {
       setLoading(false)
     }
   }
-  
+
   useEffect(() => {
-    fetch()
-  }, [])
+    getProjects(tab)
+  }, [tab])
 
   function menuOpen(e, project) {
     setAnchorEl(e.currentTarget)
     setProject(project)
   }
 
-  async function _delete() {
-    setOpen(true)
+  function menuClose() {
+    setProject({ public: project.public })
   }
 
   function inputDeleteProjectTitle(e) {
     setDeleteProjectTitle(e.target.value)
   }
 
-  async function deleteProject() {
+  async function onDeleteProject() {
     try {
-      await storeDeleteProject(project.id)
+      await deleteProject(project.id)
+      const _projects = projects.filter(_project => _project.id != project.id)
       setProject({})
-      setOpen(false)
+      setProjects(_projects)
+      setDialog(false)
 
-      await fetch()
+
       setCreateAlert(`Project (${project.title}) deleted`, 'success')
     } catch (e) {
       setCreateErrorAlert(e)
     }
   }
 
-  async function switchProjectPublic(e) {
+  async function onDropProject() {
     try {
-      const is_public = e.target.checked
-      await updateProjectPublic(project.id, is_public)
-      setProject({ ...project, public: is_public })
-      setProjects(projects.map(_project => ({ ..._project, public: _project.id == project.id ? is_public : _project.public })))
-      setCreateAlert(`${is_public ? 'Publish' : 'UnPublish'} your project (${project.title})`, 'success')
+      await dropProject(project.id)
+      const _projects = projects.filter(_project => _project.id != project.id)
+      setProject({})
+      setProjects(_projects)
+      setDialog(false)
+
+      setCreateAlert(`Project (${project.title}) dropped`, 'success')
     } catch (e) {
       setCreateErrorAlert(e)
     }
   }
 
-  function menuClose() {
-    setProject({ public: project.public })
+  async function onSwitchProjectPublic(e) {
+    try {
+      const is_public = e.target.checked
+      await updateProjectPublic(project.id, is_public)
+      setProject({ public: is_public })
+      const _projects = projects.filter(_project => _project.id != project.id)
+      setProjects(_projects)
+      setCreateAlert(`Successfully changed the publication status of project (${project.title})`, 'success')
+    } catch (e) {
+      setCreateErrorAlert(e)
+    }
   }
 
   return (
     <>
       <UserTemplate alerts={ alerts }>
-        <Grid container spacing={2}>
+        <Stack  
+          direction="row"
+          spacing={ 1 }
+          sx={{
+            mb: 4,
+            width: '100%',
+            flexWrap: 'nowrap',
+            overflowX: 'scroll',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            '::-webkit-scrollbar': {
+              display: 'none'
+            }
+          }}
+        >
+          {
+            TABS.map((TAB, i) => (
+              TAB == '-'
+                ? (
+                  <Divider 
+                    key={ i }
+                    orientation="vertical" 
+                    flexItem 
+                  />
+                )
+                : (
+                  <Chip 
+                    key={ i }
+                    label={ TAB.label } 
+                    color={ i == tab ? 'primary' : 'default' }
+                    onClick={ () => changeTab(i) }
+                    sx={{ px: 1 }}
+                  />
+                )
+            ))
+          }
+        </Stack>
 
+        <Grid container spacing={2}>
           {
             projects.length
             ? (
@@ -119,12 +295,16 @@ function Account() {
                       distance={ project.distance }
                       loaded
                     />
-                    <IconButton 
-                      sx={{ position: 'absolute', top: '1rem', right: 0 }}
-                      onClick={ e => menuOpen(e, project) }
-                    >
-                      <MoreVert />
-                    </IconButton>
+                    {
+                      TABS[tab].menus && (
+                        <IconButton 
+                          sx={{ position: 'absolute', top: '1rem', right: 0 }}
+                          onClick={ e => menuOpen(e, project) }
+                        >
+                          <MoreVert />
+                        </IconButton>
+                      )
+                    }
                   </Grid>
                 )
               })
@@ -151,49 +331,26 @@ function Account() {
         </Grid>
       </UserTemplate> 
 
-      <Menu 
-        anchorEl={ anchorEl }
-        open={ project.title }
-        onClose={ menuClose }
-      >
-        <MenuItem>
-          <FormControlLabel 
-            label="Publish"
-            control={
-              <Switch 
-                checked={ project.public }
-                onChange={ switchProjectPublic }
-              />
-            }
-          />
-        </MenuItem>
-        <MenuItem onClick={ _delete }>
-          <Typography color="error">Delete</Typography>
-        </MenuItem>
-      </Menu>
-
-      <Dialog open={ open } onClose={ () => setOpen(false) }>
-        <DialogTitle>Delete a project?</DialogTitle>
-        <DialogContent>
-          <DialogContentText sx={{ mb: 2 }}>Enter project title ({project?.title}) and tell me the delete button</DialogContentText>
-          <TextField 
-            variant="standard" 
-            label="Title"
-            placeholder={ project?.title }
-            fullWidth
-            required
-            onChange={ inputDeleteProjectTitle }
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button 
-            disabled={ project?.title != deleteProjectTitle }
-            onClick={ deleteProject }
-            color="error"
+      {
+        TABS[tab].menus && (
+          <Menu 
+            anchorEl={ anchorEl }
+            open={ !!project.title }
+            onClose={ menuClose }
           >
-            Delete
-          </Button>
-        </DialogActions>
+            {
+              MENUS.map(MENU => (
+                TABS[tab].menus?.includes(MENU.label) && (
+                  <MENU.Item key={ MENU.label } />
+                )
+              ))
+            }
+          </Menu>
+        )
+      }
+
+      <Dialog open={ !!dialog } onClose={ () => setDialog(false) }>
+        { DIALOGS[dialog] }
       </Dialog>
     </>
   )

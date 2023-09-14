@@ -25,8 +25,16 @@ export async function getProjectAll() {
   return await fetch('/api/project/all')
 }
 
-export async function getProjectUserId() {
-  return await fetch('/api/project/user_id')
+export async function getProjectMy(params = {}) {
+  return await fetch('/api/project/my', { params })
+}
+
+export async function getProjectTrying() {
+  return await fetch('/api/project/trying')
+}
+
+export async function getProjectReported() {
+  return await fetch('/api/project/reported')
 }
 
 export async function getProject(project_id) {
@@ -39,6 +47,10 @@ export async function createProject(data) {
 
 export async function deleteProject(project_id) {
   return await fetch('/api/project/delete', { project_id }, 'post')
+}
+
+export async function dropProject(project_id) {
+  return await fetch('/api/project/drop', { project_id }, 'post')
 }
 
 export async function updateProjectPublic(project_id, is_public) {
