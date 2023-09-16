@@ -10,16 +10,22 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       package_id: {
-        type: Sequelize.INTEGER
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        references: { model: 'packages' },
+        onUpdate: 'restrict',
+        onDelete: 'restrict'
       },
       name: {
-        type: Sequelize.STRING
-      },
-      description: {
+        allowNull: false,
         type: Sequelize.STRING
       },
       rate: {
+        allowNull: false,
         type: Sequelize.FLOAT
+      },
+      description: {
+        type: Sequelize.STRING
       },
       created_at: {
         allowNull: false,
@@ -32,18 +38,6 @@ module.exports = {
         defaultValue: Sequelize.literal('now()') 
       }
     });
-
-    await queryInterface.addConstraint('package_nfts', {
-      fields: ['package_id'],
-      type: 'foreign key',
-      name: 'package_nfts_package_id_foreign_packages_package_id',
-      references: {
-        table: 'packages',
-        field: 'id'
-      },
-      onDelete: 'cascade',
-      onUpdate: 'cascade'
-    })
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('package_nfts');

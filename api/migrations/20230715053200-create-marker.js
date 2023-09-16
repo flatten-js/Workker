@@ -10,22 +10,28 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       project_id: {
-        type: Sequelize.INTEGER
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        references: { model: 'projects' },
+        onUpdate: 'restrict',
+        onDelete: 'cascade'
       },
       title: {
+        allowNull: false,
         type: Sequelize.STRING
+      },
+      position: {
+        allowNull: false,
+        type: Sequelize.JSON
       },
       description: {
         type: Sequelize.STRING
       },
-      stamp_icon: {
-        type: Sequelize.STRING
-      },
-      position: {
+      image: {
         type: Sequelize.STRING
       },
       radius: {
-        type: Sequelize.FLOAT
+        type: Sequelize.INTEGER
       },
       created_at: {
         allowNull: false,

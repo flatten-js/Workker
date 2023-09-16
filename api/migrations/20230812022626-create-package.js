@@ -10,20 +10,24 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       name: {
-        type: Sequelize.STRING
-      },
-      description: {
+        allowNull: false,
         type: Sequelize.STRING
       },
       contract_address: {
+        allowNull: false,
         type: Sequelize.STRING
       },
-      require_ticket: {
+      ticket: {
+        allowNull: false,
         type: Sequelize.INTEGER
       },
       disabled: {
+        allowNull: false,
         type: Sequelize.BOOLEAN,
-        defaultValue: false
+        defaultValue: true
+      },
+      description: {
+        type: Sequelize.STRING
       },
       created_at: {
         allowNull: false,

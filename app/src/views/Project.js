@@ -154,7 +154,7 @@ function Project() {
                         <Grid item xs={4} sm={3} key={ marker.id }>
                           <Stamp 
                             title={ marker.title } 
-                            icon={ marker.stamp_icon } 
+                            icon={ marker.image } 
                             success={ !!marker.Stamps.length }
                             onStampPush={ () => onStampPushHandler(marker.id) }
                             loaded

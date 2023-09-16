@@ -17,7 +17,7 @@ function Pop(props) {
   const id = props.id
   const image = props.image || '/CCCCCC.png'
   const title = props.title || ''
-  const description = props.description || ''
+  const description = props.description || 'There is no description for this project'
   const loaded = props.loaded || false
   const distance = props.distance || 0
 

@@ -1,0 +1,115 @@
+@startuml
+entity projects {
+  * <<PK>> id : integer
+  --
+  * <<FK>> user_id : integer
+  --
+  * title : string
+  * radius : integer
+  public : bool = false
+  ticket : integer = 0
+  distance : float = 0
+  description : string
+  image : string
+  --
+  deleted_at: date
+  created_at: date = now()
+  updated_at: date = now()
+}
+
+entity markers {
+  * <<PK>> id : integer
+  --
+  * <<FK>> project_id : integer
+  --
+  * title : string
+  * position : json
+  description : string
+  image : string
+  radius : integer
+  --
+  created_at: date = now()
+  updated_at: date = now()
+}
+
+entity stamps {
+  * <<PK>> id : integer
+  --
+  * <<FK>> user_id : integer
+  * <<FK>> marker_id : integer
+  --
+  created_at: date = now()
+  updated_at: date = now()
+}
+
+entity users {
+  * <<PK>> id : integer
+  --
+  * name : string
+  * email : string
+  * password : string
+  ticket : integer = 0
+  verified_at : date
+  --
+  created_at: date = now()
+  updated_at: date = now()
+}
+
+entity nfts {
+  * <<PK>> id : integer
+  --
+  * <<FK>> user_id : integer
+  * <<FK>> package_id : integer
+  --
+  * token_id : integer
+  --
+  created_at: date = now()
+  updated_at: date = now()
+}
+
+entity packages {
+  * <<PK>> id : integer
+  --
+  * name : string
+  * contract_address : string
+  * ticket : integer
+  disabled : bool = true
+  description : string
+  --
+  created_at: date = now()
+  updated_at: date = now()
+}
+
+entity package_nfts {
+  * <<PK>> id : integer
+  --
+  * <<FK>> package_id : integer
+  --
+  * name : string
+  * rate : float
+  description : string
+  --
+  created_at: date = now()
+  updated_at: date = now()
+}
+
+entity project_reports {
+  * <<PK>> id : integer
+  --
+  * <<FK>> user_id : integer
+  * <<FK>> project_id : integer
+  --
+  created_at: date = now()
+  updated_at: date = now()
+}
+
+projects ||-u-|{ markers
+markers ||-o{ stamps
+projects ||-o{ project_reports
+projects }o-|| users
+users ||-u-o{ stamps
+users ||-d-o{ project_reports
+users ||-o{ nfts
+packages ||-d-o{ nfts
+packages ||-|{ package_nfts
+@enduml

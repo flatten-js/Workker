@@ -15,10 +15,10 @@ module.exports = (sequelize, DataTypes) => {
   }
   Package.init({
     name: DataTypes.STRING,
-    description: DataTypes.STRING,
     contract_address: DataTypes.STRING,
-    require_ticket: DataTypes.INTEGER,
-    disabled: DataTypes.BOOLEAN
+    ticket: DataTypes.INTEGER,
+    disabled: DataTypes.BOOLEAN,
+    description: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Package',

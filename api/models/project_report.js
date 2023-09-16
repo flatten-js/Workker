@@ -10,13 +10,13 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      ProjectReport.belongsTo(models.Project)
       models.Project.hasMany(ProjectReport, { foreignKey: 'project_id' })
+      ProjectReport.belongsTo(models.Project)
     }
   }
   ProjectReport.init({
-    project_id: DataTypes.INTEGER,
-    user_id: DataTypes.INTEGER
+    user_id: DataTypes.INTEGER,
+    project_id: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'ProjectReport',

@@ -10,14 +10,15 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      models.Package.hasMany(PackageNft, { foreignKey: 'package_id' })
+      PackageNft.belongsTo(models.Package)
     }
   }
   PackageNft.init({
     package_id: DataTypes.INTEGER,
     name: DataTypes.STRING,
-    description: DataTypes.STRING,
-    rate: DataTypes.FLOAT
+    rate: DataTypes.FLOAT,
+    description: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'PackageNft',

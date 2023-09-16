@@ -10,13 +10,15 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Stamp.belongsTo(models.Marker)
       models.Marker.hasMany(Stamp, { foreignKey: 'marker_id' })
+      Stamp.belongsTo(models.Marker)
+      models.User.hasMany(Stamp, { foreignKey: 'user_id' })
+      Stamp.belongsTo(models.User)
     }
   }
   Stamp.init({
-    marker_id: DataTypes.INTEGER,
-    user_id: DataTypes.INTEGER
+    user_id: DataTypes.INTEGER,
+    marker_id: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Stamp',

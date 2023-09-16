@@ -9,11 +9,19 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      marker_id: {
-        type: Sequelize.INTEGER
-      },
       user_id: {
-        type: Sequelize.INTEGER
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        references: { model: 'users' },
+        onUpdate: 'restrict',
+        onDelete: 'restrict'
+      },
+      marker_id: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        references: { model: 'markers' },
+        onUpdate: 'restrict',
+        onDelete: 'restrict'
       },
       created_at: {
         allowNull: false,

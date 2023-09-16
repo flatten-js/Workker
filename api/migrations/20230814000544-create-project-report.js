@@ -9,11 +9,19 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      project_id: {
-        type: Sequelize.INTEGER
-      },
       user_id: {
-        type: Sequelize.INTEGER
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        references: { model: 'users' },
+        onUpdate: 'restrict',
+        onDelete: 'restrict'
+      },
+      project_id: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        references: { model: 'projects' },
+        onUpdate: 'restrict',
+        onDelete: 'restrict'
       },
       created_at: {
         allowNull: false,
@@ -26,24 +34,6 @@ module.exports = {
         defaultValue: Sequelize.literal('now()') 
       }
     });
-
-    await queryInterface.addConstraint('project_reports', {
-      fields: ['project_id'],
-      type: 'foreign key',
-      name: 'project_reports_project_id_foreign_projects_id',
-      references: {
-        table: 'projects',
-        field: 'id'
-      },
-      onDelete: 'cascade',
-      onUpdate: 'cascade'
-    })
-
-    await queryInterface.addConstraint('project_reports', {
-      fields: ['project_id', 'user_id'],
-      type: 'unique',
-      name: 'project_reports_project_id_user_id_unique'
-    })
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('project_reports');

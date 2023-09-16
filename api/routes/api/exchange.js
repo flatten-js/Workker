@@ -15,7 +15,7 @@ router.post('/', authenticate, router_handler(async (req, res) => {
 
   const token_id = await sequelize.transaction(async transaction => {
     const user = await User.findOne({ where: { id: user_id }, lock: true }, { transaction })
-    user.ticket -= package.require_ticket
+    user.ticket -= package.ticket
     if (user.ticket < 0) throw Error('Not enough tickets')
     await user.save({ transaction })
 

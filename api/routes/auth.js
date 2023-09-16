@@ -48,12 +48,12 @@ router.post('/signin', router_handler(async (req, res) => {
 }))
 
 router.post('/signup', router_handler(async (req, res) => {
-  const { email, password } = req.body
+  const { name, email, password } = req.body
 
   let user = await User.findOne({ where: { email } })
   if (user) throw new Error('That email address is in use')
 
-  user = await User.create({ email, password: await hash_password(password) })
+  user = await User.create({ name: 'Developer', email, password: await hash_password(password) })
 
   const token = activate_token(user.id)
   await Mailer.activate_account(email, ...token)

@@ -9,8 +9,35 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      user_id: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        references: { model: 'users' },
+        onUpdate: 'restrict',
+        onDelete: 'restrict'
+      },
       title: {
+        allowNull: false,
         type: Sequelize.STRING
+      },
+      radius: {
+        allowNull: false,
+        type: Sequelize.INTEGER
+      },
+      public: {
+        allowNull: false,
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
+      ticket: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        defaultValue: 0
+      },
+      distance: {
+        allowNull: false,
+        type: Sequelize.FLOAT,
+        defaultValue: 0
       },
       description: {
         type: Sequelize.STRING
@@ -18,9 +45,8 @@ module.exports = {
       image: {
         type: Sequelize.STRING
       },
-      radius: {
-        type: Sequelize.FLOAT,
-        defaultValue: 10
+      deleted_at: {
+        type: Sequelize.DATE
       },
       created_at: {
         allowNull: false,

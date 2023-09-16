@@ -10,12 +10,21 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       user_id: {
-        type: Sequelize.INTEGER
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        references: { model: 'users' },
+        onUpdate: 'restrict',
+        onDelete: 'restrict'
       },
       package_id: {
-        type: Sequelize.INTEGER
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        references: { model: 'packages' },
+        onUpdate: 'restrict',
+        onDelete: 'restrict'
       },
       token_id: {
+        allowNull: false,
         type: Sequelize.INTEGER
       },
       created_at: {
@@ -29,36 +38,6 @@ module.exports = {
         defaultValue: Sequelize.literal('now()') 
       }
     });
-
-    await queryInterface.addConstraint('nfts', {
-      fields: ['package_id'],
-      type: 'foreign key',
-      name: 'nfts_package_id_foreign_packages_package_id',
-      references: {
-        table: 'packages',
-        field: 'id'
-      },
-      onDelete: 'cascade',
-      onUpdate: 'cascade'
-    })
-
-    await queryInterface.addConstraint('nfts', {
-      fields: ['user_id'],
-      type: 'foreign key',
-      name: 'nfts_user_id_foreign_users_id',
-      references: {
-        table: 'users',
-        field: 'id'
-      },
-      onDelete: 'cascade',
-      onUpdate: 'cascade'
-    })
-
-    await queryInterface.addConstraint('nfts', {
-      fields: ['package_id', 'token_id'],
-      type: 'unique',
-      name: 'nfts_package_id_token_id_unique'
-    })
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('nfts');
