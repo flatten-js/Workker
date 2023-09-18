@@ -21,11 +21,12 @@ import useAlerts from '@@/hooks/useAlerts'
 function Project() {
   const { id: project_id } = useParams() 
 
+  const [loading, setLoading] = useState(true)
   const [project, setProject] = useState({})
   const [markers, setMarkers] = useState([])
-  const [reported, setReported] = useState(true)
+  const [reported, setReported] = useState(false)
   const [position, setPosition] = useState(null)
-  const [repoting, setReporting] = useState(false)
+  const [reporting, setReporting] = useState(false)
   const [dialog, setDialog] = useState({})
 
   const [alerts, { setCreateAlert, setCreateErrorAlert }] = useAlerts()
@@ -34,6 +35,7 @@ function Project() {
   
   async function fetch() {
     try {
+      setLoading(true)
       const project = await getProject(project_id)
       if (project) {
         const markers = await getMarkers(project_id)
@@ -46,6 +48,8 @@ function Project() {
       }
     } catch (e) {
       setCreateAlert('Failed to load data.')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -119,7 +123,7 @@ function Project() {
               <Button 
                 variant="outlined" 
                 sx={{ display: 'block', mb: 2, ml: 'auto' }}
-                disabled={ repoting || !markers.every(marker => marker.Stamps.length) }
+                disabled={ loading || reporting || !markers.every(marker => marker.Stamps.length) }
                 onClick={ report }
               >
                 Report

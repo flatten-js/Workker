@@ -26,15 +26,15 @@ export async function getProjectAll() {
 }
 
 export async function getProjectMy(params = {}) {
-  return await fetch('/api/project/my', { params })
+  return await fetch('/api/project/all/my', { params })
 }
 
 export async function getProjectTrying() {
-  return await fetch('/api/project/trying')
+  return await fetch('/api/project/all/trying')
 }
 
 export async function getProjectReported() {
-  return await fetch('/api/project/reported')
+  return await fetch('/api/project/all/reported')
 }
 
 export async function getProject(project_id) {

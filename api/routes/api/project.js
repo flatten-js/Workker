@@ -4,7 +4,7 @@ const router = express.Router()
 const { Op } = require('sequelize')
 
 const { sequelize, Project, Marker, Stamp, User, ProjectReport } = require('###/models')
-const { verify, authenticate } = require('##/middlewares/auth.js')
+const { authenticate } = require('##/middlewares/auth.js')
 const { router_handler } = require('##/utils.js')
 const { 
 	to_positions, 
@@ -20,7 +20,7 @@ router.get('/all', authenticate, router_handler(async (req, res) => {
 	return res.json(projects)
 }))
 
-router.get('/my', authenticate, router_handler(async (req, res) => {
+router.get('/all/my', authenticate, router_handler(async (req, res) => {
 	const _public = req.query.public
 
 	const projects = await Project.findAll({ 
@@ -34,7 +34,7 @@ router.get('/my', authenticate, router_handler(async (req, res) => {
 	return res.json(projects)
 }))
 
-router.get('/trying', authenticate, router_handler(async (req, res) => {
+router.get('/all/trying', authenticate, router_handler(async (req, res) => {
 	const { user_id } = req.decoded
 	
 	const models = await Stamp.findAll({
@@ -69,7 +69,7 @@ router.get('/trying', authenticate, router_handler(async (req, res) => {
 	res.json(projects)
 }))
 
-router.get('/reported', authenticate, router_handler(async (req, res) => {
+router.get('/all/reported', authenticate, router_handler(async (req, res) => {
 	const models = await ProjectReport.findAll({
 		attributes: [], 
 		where: { user_id: req.decoded.user_id }, 
@@ -264,7 +264,7 @@ router.post('/report', authenticate, router_handler(async (req, res) => {
 	const is_reported = await ProjectReport.findOne({ where: { project_id, user_id } })
 	if (is_reported) throw Error('Already reported in this project')
 
-	const project = await Project.findOne({ where: { id: project_id } })
+	const project = await Project.findOne({ where: { id: project_id }, paranoid: false })
 	await sequelize.transaction(async transaction => {
 		const user = await User.findOne({ where: { id: user_id }, lock: true }, { transaction })
 		user.ticket += project.ticket
