@@ -45,7 +45,10 @@ router.get('/trying', authenticate, router_handler(async (req, res) => {
 				model: Marker,
 				attributes: [],
 				include: [
-					{ model: Project }
+					{ 
+						model: Project,
+						paranoid: false
+					}
 				]
 			}
 		],
@@ -71,7 +74,10 @@ router.get('/reported', authenticate, router_handler(async (req, res) => {
 		attributes: [], 
 		where: { user_id: req.decoded.user_id }, 
 		include: [
-			{ model: Project }
+			{ 
+				model: Project,
+				paranoid: false 
+			}
 		],
 		order: [['updatedAt', 'DESC']],
 		nest: true,
@@ -83,20 +89,43 @@ router.get('/reported', authenticate, router_handler(async (req, res) => {
 }))
 
 router.get('/get', authenticate, router_handler(async (req, res) => {
-	const project = await Project.findOne({ 
+	const { user_id } = req.decoded
+	const { project_id } = req.query
+
+	let project = await Project.findOne({ 
 		where: { 
-			id: req.query.project_id,
+			id: project_id,
 			[Op.or]: [
 				{
 					public: true
 				},
 				{
 					public: false,
-					user_id: req.decoded.user_id
+					user_id
 				}
 			]
-		} 
+		}
 	})
+
+	if (!project) {
+		project = await Project.findOne({
+			where: { id: project_id },
+			include: {
+				model: Marker,
+				attributes: [],
+				required: true,
+				include: {
+					model: Stamp,
+					attributes: [],
+					required: true,
+					where: { user_id }
+				}
+			},
+			paranoid: false
+		})
+
+	}
+
 	return res.json(project)
 }))
 
@@ -161,17 +190,48 @@ router.post('/create', authenticate, router_handler(async (req, res) => {
 }))
 
 router.post('/delete', authenticate, router_handler(async (req, res) => {
-	const project = await Project.findOne({ 
-		where: { 
-			id: req.body.project_id, 
-			user_id: req.decoded.user_id 
-		} 
+	const { user_id } = req.decoded
+	const { project_id } = req.body
+
+	const project = await Project.findOne({ where: { id: project_id, user_id } })
+
+	if (!project) {
+		throw new Error('An invalid project ID was specified')
+	}
+
+	const markers = await Marker.findAll({
+		attributes: ['id'],
+		where: { project_id }
 	})
 
-	if (project) {
+	const marker_ids = markers.map(marker => marker.id)
+
+	const stamp = await Stamp.count({
+		where: {
+			marker_id: {
+				[Op.in]: marker_ids
+			},
+			user_id: {
+				[Op.ne]: user_id
+			}
+		}
+	})
+
+	if (0 < stamp) {
 		await project.destroy()
 	} else {
-		throw new Error('An invalid project ID was specified')
+		await sequelize.transaction(async transaction => {
+			await Stamp.destroy({
+				where: {
+					marker_id: {
+						[Op.in]: marker_ids
+					}
+				},
+				force: true
+			}, { transaction })
+
+			await project.destroy({ force: true }, { transaction })
+		})
 	}
 
 	res.json({})
@@ -243,7 +303,8 @@ router.post('/drop', authenticate, router_handler(async (req, res) => {
 			marker_id: {
 				[Op.in]: markers.map(marker => marker.id)
 			}
-		}
+		},
+		force: true
 	})
 
 	res.json({})

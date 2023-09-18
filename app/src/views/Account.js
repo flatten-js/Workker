@@ -316,7 +316,7 @@ function Account() {
                   Message => (
                     <Grid item xs={12}>
                       <Message center>
-                        There are currently no projects created
+                        No matching project found
                       </Message>
                     </Grid>
                   )
