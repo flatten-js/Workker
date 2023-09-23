@@ -1,14 +1,15 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
-import { GuardRoute } from './components'
-
 import Signxx from './views/Signxx'
 import Home from './views/Home'
 import Factory from './views/Factory'
+import Shop from './views/Shop'
 import Exchange from './views/Exchange'
 import NFTs from './views/NFTs'
 import Account from './views/Account'
 import Project from './views/Project'
+
+import { GuardRoute } from './components'
 
 import "./App.css"
 
@@ -23,6 +24,7 @@ function App() {
         <Route element={ <GuardRoute user redirect="/signin" /> }>
           <Route path="/" element={ <Home /> } />
           <Route path="/factory" element={ <Factory /> } />
+          <Route path="/shop" element={ <Shop /> } />
           <Route path="/exchange" element={ <Exchange /> } />
           <Route path="/nfts" element={ <NFTs /> } />
           <Route path="/account" element={ <Account /> } />

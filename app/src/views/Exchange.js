@@ -72,6 +72,7 @@ function Exchange() {
                     <Package 
                       name={ _package.name }
                       description={ _package.description }
+                      ticket={ _package.ticket }
                       max={ _package.supply.max }
                       value={ _package.supply.total }
                       disabled={ !user.ticket }
@@ -86,7 +87,15 @@ function Exchange() {
             : (
               <Loading 
                 loading={ loading } 
-                message="No publicly available packages available for exchange" 
+                message={
+                  Message => (
+                    <Grid xs={12}>
+                      <Message center>
+                        No packages available for exchange
+                      </Message>
+                    </Grid>
+                  )
+                }
               >
                 <Grid item xs={12} sm={6} md={4}>
                   <Paper sx={{ p: 4 }}>

@@ -11,14 +11,17 @@ const MAIL_SMTP_PORT = process.env.MAIL_SMTP_PORT
 const MAIL_USER = process.env.MAIL_USER
 const MAIL_PASS = process.env.MAIL_PASS
 
-NFT_PROVIDER = process.env.NFT_PROVIDER || 'http://blockchain:8545'
-NFT_OWNER_ADDRESS = process.env.NFT_OWNER_ADDRESS
-NFT_OWNER_PRIVATE_KEY = process.env.NFT_OWNER_PRIVATE_KEY
-NFT_STORAGE_PATH = process.env.NFT_STORAGE_PATH || './storage/develop.vol.1/metadata'
+const NFT_PROVIDER = process.env.NFT_PROVIDER || 'http://blockchain:8545'
+const NFT_OWNER_ADDRESS = process.env.NFT_OWNER_ADDRESS
+const NFT_OWNER_PRIVATE_KEY = process.env.NFT_OWNER_PRIVATE_KEY
+const NFT_STORAGE_PATH = process.env.NFT_STORAGE_PATH || './storage/develop.vol.1/metadata'
 
-METADATA_PUBLIC_KEY = (process.env.METADATA_PUBLIC_KEY || '').replace(/\\n/g, '\n')
-METADATA_PRIVATE_KEY = (process.env.METADATA_PRIVATE_KEY || '').replace(/\\n/g, '\n')
-METADATA_PATH = process.env.METADATA_PATH || 'https://localhost/storage/{package}/nfts/{image}'
+const METADATA_PUBLIC_KEY = (process.env.METADATA_PUBLIC_KEY || '').replace(/\\n/g, '\n')
+const METADATA_PRIVATE_KEY = (process.env.METADATA_PRIVATE_KEY || '').replace(/\\n/g, '\n')
+const METADATA_PATH = process.env.METADATA_PATH || 'https://localhost/storage/{package}/nfts/{image}'
+
+const STRIPE_SECRET_API_KEY = process.env.STRIPE_SECRET_API_KEY
+const STRIPE_SECRET_WEBHOOK_KEY = process.env.STRIPE_SECRET_WEBHOOK_KEY
 
 module.exports = {
   APP_URL,
@@ -36,5 +39,7 @@ module.exports = {
   NFT_STORAGE_PATH,
   METADATA_PUBLIC_KEY,
   METADATA_PRIVATE_KEY,
-  METADATA_PATH
+  METADATA_PATH,
+  STRIPE_SECRET_API_KEY,
+  STRIPE_SECRET_WEBHOOK_KEY
 }

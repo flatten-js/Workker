@@ -1,5 +1,3 @@
-import axios from 'axios'
-
 import { useState } from 'react'
 
 import { Navigate, Outlet } from 'react-router-dom'

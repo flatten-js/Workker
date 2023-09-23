@@ -92,3 +92,11 @@ export async function reportProject(project_id) {
 export async function getReported(project_id) {
   return await fetch('/api/project/reported', { params: { project_id } })
 }
+
+export async function getShopItems() {
+  return await fetch('/api/shop/items')
+}
+
+export async function paymentIntent(item_id) {
+  return await fetch('/api/payment/intent', { item_id }, 'post')
+}

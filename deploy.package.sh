@@ -40,8 +40,10 @@ do
     read -sp "PRIVATE_KEY: " PRIVATE_KEY
     echo -ne "\r\033[K"
   fi
-  
-  docker-compose stop blockchain > /dev/null 2>&1
+
+  if [ $NETWORK == $NETWORK_DEVELOPMENT ]; then
+    docker-compose stop blockchain > /dev/null 2>&1
+  fi
 
   result=$(
     docker run --rm \
@@ -49,10 +51,12 @@ do
       -e MAX_TOKEN=$MAX_TOKEN -e PRIVATE_KEY=$PRIVATE_KEY \
       -v ./blockchain:/usr/local/src \
       -v blockchain_node_modules:/usr/local/src/node_modules \
-      blockchain ./deploy.sh --network $NETWORK 2>&1
+      blockchain ./deploy.sh $NETWORK 2>&1
   )
 
-  docker-compose up -d blockchain > /dev/null 2>&1
+  if [ $NETWORK == $NETWORK_DEVELOPMENT ]; then
+    docker-compose up -d blockchain > /dev/null 2>&1
+  fi
 
   ACCOUNT=$(echo $result | sed -r 's/.*> account:[ ]*([0-9a-zA-Z]+).*/\1/')
   PRIVATE_KEY=$(echo $result | sed -r 's/.*Private Keys ================== \(0\)[ ]*([0-9a-zA-Z]+).*/\1/')

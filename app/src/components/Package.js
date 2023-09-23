@@ -5,6 +5,7 @@ import { Progress } from '@@/components'
 function Package(props) {
   const name = props.name
   const description = props.description || 'There is no description in this package'
+  const ticket = props.ticket
   const max = parseInt(props.max) || 0
   const value = max - (parseInt(props.value) || 0)
   const disabled = props.disabled || false
@@ -68,7 +69,7 @@ function Package(props) {
           ? (
             <>
               <Typography variant="h6">
-                1 <Typography variant="subtitle2" component="span">Ticket</Typography>
+                { ticket } <Typography variant="subtitle2" component="span">Ticket</Typography>
               </Typography>
               <Button 
                 variant="contained"

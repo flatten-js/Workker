@@ -1,7 +1,13 @@
-#!/bin/sh
+#!/bin/bash
+
+NETWORK_DEVELOPMENT=development
+
+NETWORK=${1:-$NETWORK_DEVELOPMENT}
 
 yarn
 
-yarn start &
+if [ $NETWORK == $NETWORK_DEVELOPMENT ]; then
+  yarn start &
+fi
 
-yarn migrate $@
+yarn migrate --network $NETWORK

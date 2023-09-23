@@ -68,6 +68,7 @@ function UserTemplate(props) {
       <List subheader={ <ListSubheader>Navigations</ListSubheader> }>
         <ListLinkItem to="/">HOME</ListLinkItem>
         <ListLinkItem to="/factory">FACTORY</ListLinkItem>
+        <ListLinkItem to="/shop">SHOP</ListLinkItem>
         <ListLinkItem to="/exchange">EXCHANGE</ListLinkItem>
         <ListLinkItem to="/nfts">NFTS</ListLinkItem>
       </List>

@@ -103,6 +103,18 @@ entity project_reports {
   updated_at: date = now()
 }
 
+entity shop_items {
+  * <<PK>> id : integer
+  --
+  * title : string
+  * amount : integer
+  * type : string
+  * quantity : integer
+  description : string
+  created_at: date = now()
+  updated_at: date = now()
+}
+
 projects ||-u-|{ markers
 markers ||-o{ stamps
 projects ||-o{ project_reports
