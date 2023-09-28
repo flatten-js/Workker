@@ -15,9 +15,25 @@ const {
 	nearby
 } = require('##/lib/geo.js')
 
+const LIMIT = 10
+
 router.get('/all', authenticate, router_handler(async (req, res) => {
-	const projects = await Project.findAll({ where: { public: true }, order: [['updatedAt', 'DESC']] })
+	const { page } = req.query
+	
+	const projects = await Project.findAll({ 
+		where: { public: true }, 
+		order: [['updatedAt', 'DESC']], 
+		limit: LIMIT,
+		offset: (page - 1) * LIMIT
+	})
+
 	return res.json(projects)
+}))
+
+router.get('/all/count', authenticate, router_handler(async (req, res) => {
+	let count = await Project.count({ where: { public: true } })
+	count = Math.ceil(count / LIMIT) || 1
+	return res.json(count)
 }))
 
 router.get('/all/my', authenticate, router_handler(async (req, res) => {

@@ -21,8 +21,12 @@ export async function authenticate() {
   return await fetch('/auth/authenticate')
 }
 
-export async function getProjectAll() {
-  return await fetch('/api/project/all')
+export async function getProjectAll(page) {
+  return await fetch('/api/project/all', { params: { page } })
+}
+
+export async function getProjectAllCount() {
+  return await fetch('/api/project/all/count')
 }
 
 export async function getProjectMy(params = {}) {
