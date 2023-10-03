@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
-import Signxx from './views/Signxx'
+import SignIn from './views/SignIn'
+import SignUp from './views/SignUp'
 import Home from './views/Home'
 import Factory from './views/Factory'
 import Shop from './views/Shop'
@@ -18,8 +19,8 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route element={ <GuardRoute guest redirect="/" /> }>
-          <Route path="/signin" element={ <Signxx type="in" /> } />
-          <Route path="/signup" element={ <Signxx type="up" /> } />
+          <Route path="/signin" element={ <SignIn /> } />
+          <Route path="/signup" element={ <SignUp /> } />
         </Route>
         <Route element={ <GuardRoute user redirect="/signin" /> }>
           <Route path="/" element={ <Home /> } />

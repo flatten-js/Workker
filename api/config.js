@@ -23,6 +23,10 @@ const METADATA_PATH = process.env.METADATA_PATH || 'https://localhost/storage/{p
 const STRIPE_SECRET_API_KEY = process.env.STRIPE_SECRET_API_KEY
 const STRIPE_SECRET_WEBHOOK_KEY = process.env.STRIPE_SECRET_WEBHOOK_KEY
 
+const REDIS_URL = process.env.REDIS_URL
+
+const REDIS_VCODE_PREFIX = process.env.REDIS_VCODE_PREFIX || 'VCODE'
+
 module.exports = {
   APP_URL,
   GCP_PLACE_APIKEY,
@@ -41,5 +45,7 @@ module.exports = {
   METADATA_PRIVATE_KEY,
   METADATA_PATH,
   STRIPE_SECRET_API_KEY,
-  STRIPE_SECRET_WEBHOOK_KEY
+  STRIPE_SECRET_WEBHOOK_KEY,
+  REDIS_URL,
+  REDIS_VCODE_PREFIX
 }

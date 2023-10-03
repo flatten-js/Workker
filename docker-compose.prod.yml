@@ -33,6 +33,11 @@ services:
       mysql:
         condition: service_healthy
   
+  redis:
+    image: redis:7
+    volumes:
+      - ./data/redis:/data
+  
   mysql:
     image: mysql:8
     environment:

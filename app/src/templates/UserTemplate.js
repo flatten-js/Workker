@@ -19,9 +19,8 @@ import {
 } from '@mui/material'
 import { Menu as MenuIcon } from '@mui/icons-material'
 
-import useAlerts from '@@/hooks/useAlerts'
-
 import Template from './Template'
+import useAlerts from '@@/hooks/useAlerts'
 import { ListLinkItem } from '@@/components'
 import { signOut } from '@@/store'
 

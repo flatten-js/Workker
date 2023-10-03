@@ -3,28 +3,24 @@ const router = express.Router()
 
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
-const sequelize = require('sequelize')
+const _sequelize = require('sequelize')
+const crypto = require('crypto')
 
 const { JWT_SECRET, TOKEN_COOKIE_NAME } = require('##/config.js')
 const { router_handler, hash_password } = require('##/utils.js')
 const Mailer = require('###/mailer')
-const { User } = require('###/models')
-const { authenticate } = require('##/middlewares/auth.js')
-const { APP_URL } = require('../config')
+const { sequelize, User } = require('###/models')
+const { set_vcode, get_vcode } = require('##/stores/redis.js')
+const { authenticate, unverifiedAuthenticate } = require('##/middlewares/auth.js')
 
 router.get('/authenticate', authenticate, (req, res) => {
   res.json({})
 })
 
-function access_token(user_id) {
-  const token = jwt.sign({ user_id }, JWT_SECRET, { expiresIn: '1h' })
+function access_token(user_id, verified) {
+  const token = jwt.sign({ user_id, verified }, JWT_SECRET, { expiresIn: '1h' })
   const options = { httpOnly: true, secure: true, sameSite: true }
   return [token, options]
-}
-
-function activate_token(user_id) {
-  const token = jwt.sign({ user_id }, JWT_SECRET, { expiresIn: 60 * 5 })
-  return [token]
 }
 
 router.post('/signin', router_handler(async (req, res) => {
@@ -36,15 +32,20 @@ router.post('/signin', router_handler(async (req, res) => {
   const compared = await bcrypt.compare(password, user.password)
   if (!compared) throw new Error('Password did not match.')
 
-  if (user.verified_at) {
-    const token = access_token(user.id)
-    res.cookie(TOKEN_COOKIE_NAME, ...token)
-  } else {
-    const token = activate_token(user.id)
-    await Mailer.activate_account(email, ...token)
+  const verified = !!user.verified_at
+
+  if (!verified) {
+    let code = await get_vcode(user.id)
+    if (!code) {
+      code = crypto.randomInt(100000, 999999)
+      await set_vcode(user.id, code)
+      await Mailer.activate_account(email, code)
+    }
   }
   
-  res.json({ verified: !!user.verified_at })
+  const token = access_token(user.id, verified)
+  res.cookie(TOKEN_COOKIE_NAME, ...token)
+  res.json({ verified })
 }))
 
 router.post('/signup', router_handler(async (req, res) => {
@@ -53,35 +54,42 @@ router.post('/signup', router_handler(async (req, res) => {
   let user = await User.findOne({ where: { email } })
   if (user) throw new Error('That email address is in use')
 
-  user = await User.create({ name: 'Developer', email, password: await hash_password(password) })
+  await sequelize.transaction(async transaction => {
+    user = await User.create({
+      name: 'Developer', 
+      email, 
+      password: await hash_password(password) 
+    }, { transaction })
 
-  const token = activate_token(user.id)
-  await Mailer.activate_account(email, ...token)
+    const code = crypto.randomInt(100000, 999999)
+    await set_vcode(user.id, code)
+    await Mailer.activate_account(email, code)
+  })
 
+  const token = access_token(user.id, false)
+  res.cookie(TOKEN_COOKIE_NAME, ...token)
   res.json({})
 }))
 
-router.get('/activate/:token', async (req, res) => {
-  try {
-    const decoded = jwt.verify(req.params.token, JWT_SECRET)
+router.post('/verify', unverifiedAuthenticate, router_handler(async (req, res) => {
+  const { user_id } = req.decoded
+  const { code } = req.body
+  const vcode = await get_vcode(user_id)
 
-    const user = await User.findOne({ where: { id: decoded.user_id } })
-    if (!user) throw new Error('No users have been registered yet.')
+  const user = await User.findOne({ where: { id: user_id } })
+  if (!user) throw new Error('No users have been registered yet.')
 
-    if (!user.verified_at) {
-      user.verified_at = sequelize.fn('NOW')
-      await user.save()
+  if (code == vcode) {
+    user.verified_at = _sequelize.fn('NOW')
+    await user.save()
 
-      const token = access_token(user.id)
-      res.cookie(TOKEN_COOKIE_NAME, ...token)
-    }
-  
-    res.redirect(APP_URL)
-  } catch (e) {
-    console.error(e)
-    res.redirect(APP_URL)
+    const token = access_token(user.id, true)
+    res.cookie(TOKEN_COOKIE_NAME, ...token)
+    res.send()
+  } else {
+    res.status(400).send('Incorrect verification code.')
   }
-})
+}))
 
 router.post('/signout', router_handler((req, res) => {
   res.clearCookie(TOKEN_COOKIE_NAME)

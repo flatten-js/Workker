@@ -13,10 +13,10 @@ function verify(req) {
   }
 }
 
-async function authenticate(req, res, next) {
+function baseAuthenticate(req, res, next, cond_cb) {
   try {
     const decoded = verify(req)
-    if (decoded) {
+    if (cond_cb(decoded)) {
       req.decoded = decoded
       return next()
     }
@@ -26,4 +26,12 @@ async function authenticate(req, res, next) {
   res.status(401).end()
 }
 
-module.exports = { verify, authenticate }
+async function authenticate(req, res, next) {
+  baseAuthenticate(req, res, next, decoded => decoded.verified)
+}
+
+function unverifiedAuthenticate(req, res, next) {
+  baseAuthenticate(req, res, next, decoded => !decoded.verified)
+}
+
+module.exports = { authenticate, unverifiedAuthenticate }

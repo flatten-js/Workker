@@ -13,6 +13,10 @@ export async function signUp(data) {
   return await fetch('/auth/signup', data, 'post')
 }
 
+export async function userVerify(code) {
+  return await fetch('/auth/verify', { code }, 'post')
+}
+
 export async function signOut() {
   return await fetch('/auth/signout', {}, 'post')
 }
