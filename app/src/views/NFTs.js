@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { Grid } from '@mui/material'
 
@@ -13,6 +14,7 @@ function NFTs() {
   const [loading, setLoading] = useState(true)
 
   const [alerts, { setCreateAlert }] = useAlerts()
+  const navigate = useNavigate()
 
   async function updateNFTs() {
     try {
@@ -51,6 +53,10 @@ function NFTs() {
 
     await updateNFTs()
   }
+
+  function toNFT(id) {
+    navigate(`/nfts/${id}`)
+  }
   
   return (
     <UserTemplate alerts={ alerts }>
@@ -65,6 +71,7 @@ function NFTs() {
                   metadata={ nft.metadata }
                   onReveal={ () => onRevealHandler(nft) }
                   revealing={ revealing }
+                  onClick={ () => toNFT(nft.id) }
                   loaded
                 />
               </Grid>

@@ -7,7 +7,9 @@ const { Nft } = require('###/models')
 const web3 = require('###/stores/web3')
 
 router.get('/own', authenticate, router_handler(async (req, res) => {
-  const nfts = await web3.own_nfts(req.decoded.user_id)
+  const { user_id } = req.decoded
+  const { token_id } = req.query
+  const nfts = await web3.own_nfts(user_id, token_id)
   res.json(nfts)
 }))
 

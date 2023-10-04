@@ -1,7 +1,4 @@
 import { useState, useEffect } from 'react'
-import { Link } from "react-router-dom"
-
-import { Stack, Button } from '@mui/material'
 
 import UserTemplate from '@@/templates/UserTemplate'
 import { ProjectSection } from '@@/components'

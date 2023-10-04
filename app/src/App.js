@@ -7,6 +7,7 @@ import Factory from './views/Factory'
 import Shop from './views/Shop'
 import Exchange from './views/Exchange'
 import NFTs from './views/NFTs'
+import NFT from './views/NFT'
 import Account from './views/Account'
 import Project from './views/Project'
 
@@ -28,6 +29,7 @@ function App() {
           <Route path="/shop" element={ <Shop /> } />
           <Route path="/exchange" element={ <Exchange /> } />
           <Route path="/nfts" element={ <NFTs /> } />
+          <Route path="/nfts/:id" element={ <NFT /> } />
           <Route path="/account" element={ <Account /> } />
           <Route path="/:id" element={ <Project /> } />
         </Route>

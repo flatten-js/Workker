@@ -113,9 +113,9 @@ function totalSupply(package_id, contract) {
   return contract.methods.totalSupply().call()
 }
 
-async function own_nfts(user_id) {
+async function own_nfts(user_id, token_id) {
   let nfts = await Nft.findAll({ 
-    where: { user_id }, 
+    where: { user_id, ...(token_id ? { token_id } : {}) }, 
     include: { 
       model: Package, 
       required: true
@@ -124,9 +124,12 @@ async function own_nfts(user_id) {
 
   nfts = await Promise.all(nfts.map(async nft => {
     const result = {
+      id: nft.id,
       package_id: nft.package_id,
       name: nft.Package.name,
-      token_id: nft.token_id
+      contract_address: nft.Package.contract_address,
+      token_id: nft.token_id,
+      description: nft.Package.description
     }
 
     try {
