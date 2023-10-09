@@ -6,8 +6,8 @@ entity projects {
   --
   * title : string
   * radius : integer
+  * charge : float
   public : bool = false
-  ticket : integer = 0
   distance : float = 0
   description : string
   image : string
@@ -49,6 +49,7 @@ entity users {
   * email : string
   * password : string
   ticket : integer = 0
+  charge : float = 0.5
   verified_at : date
   --
   created_at: date = now()

@@ -9,8 +9,19 @@ import {
 
 import UserTemplate from "@@/templates/UserTemplate"
 import useAlerts from '@@/hooks/useAlerts'
-import { Loading, UnitListItem, Payment, CheckoutForm } from '@@/components'
-import { getUser, getShopItems, paymentIntent } from '@@/store'
+import { 
+  Loading, 
+  UnitListItem, 
+  Payment, 
+  CheckoutForm,
+  Charge 
+} from '@@/components'
+import { 
+  getUser, 
+  getShopItems, 
+  paymentIntent,
+  exchangeCharge
+} from '@@/store'
 
 function Shop() {
   const [loading, setLoading] = useState(true)
@@ -68,6 +79,18 @@ function Shop() {
   function amount(amount) {
     return `¥ ${amount}`
   }
+
+  async function charge() {
+    try {
+      await exchangeCharge()
+      setCreateAlert('Successfully exchanged tickets', 'success')
+    } catch (e) {
+      setCreateAlert('Failed to exchange tickets')
+    }
+
+    const user = await getUser()
+    setUser(user)
+  }
  
   return (
     <UserTemplate alerts={ alerts }>
@@ -75,6 +98,16 @@ function Shop() {
         Your Ticket: { user.ticket ?? '-' }
       </Typography>
 
+      <Box sx={{ mb: 4 }}>
+        <Charge 
+          value={ user.charge }
+          onClick={ charge }
+        />
+      </Box>
+
+      <Typography variant="subtitle2" color="gray">
+        Ticket
+      </Typography>
       <List>
         {
           items.length

@@ -149,7 +149,11 @@ router.post('/create', authenticate, router_handler(async (req, res) => {
 	const { title, description, position, radius, allocate } = req.body
 	let { markers } = req.body
 
-	const MAX_SIZE = 10, RADIUS = 500, TICKET_WEIGHT = 1000
+	const 
+		MAX_SIZE = 10, 
+		RADIUS = 500, 
+		TICKET_WEIGHT = 1000,
+		MIN_DISTANCE = 500
 
 	markers = markers.slice(0, MAX_SIZE)
 
@@ -178,6 +182,9 @@ router.post('/create', authenticate, router_handler(async (req, res) => {
 		markers = order_by_markers(markers, positions)
 		const distance = total_distance(positions)
 
+		const charge = Math.floor((distance / TICKET_WEIGHT) * 10) / 10
+		const rate = markers.length / MAX_SIZE
+
 		await sequelize.transaction(async transaction => {
 			const project = await Project.create({ 
 				user_id: req.decoded.user_id, 
@@ -185,7 +192,7 @@ router.post('/create', authenticate, router_handler(async (req, res) => {
 				description: description || void 0,
 				radius,
 				distance,
-				ticket: Math.min(Math.trunc(distance / TICKET_WEIGHT), 5)
+				charge: distance >= MIN_DISTANCE ? Math.min(charge * rate, 5) : 0
 			}, { transaction })
 			
 			for (const marker of markers) {
@@ -283,7 +290,7 @@ router.post('/report', authenticate, router_handler(async (req, res) => {
 	const project = await Project.findOne({ where: { id: project_id }, paranoid: false })
 	await sequelize.transaction(async transaction => {
 		const user = await User.findOne({ where: { id: user_id }, lock: true }, { transaction })
-		user.ticket += project.ticket
+		user.charge += project.charge
 		await user.save({ transaction })
 		await ProjectReport.create({ project_id, user_id }, { transaction })
 	})

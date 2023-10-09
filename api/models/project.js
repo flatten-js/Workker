@@ -18,8 +18,8 @@ module.exports = (sequelize, DataTypes) => {
     user_id: DataTypes.INTEGER,
     title: DataTypes.STRING,
     radius: DataTypes.INTEGER,
+    charge: DataTypes.FLOAT,
     public: DataTypes.BOOLEAN,
-    ticket: DataTypes.INTEGER,
     distance: DataTypes.FLOAT,
     description: DataTypes.STRING,
     image: DataTypes.STRING

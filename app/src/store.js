@@ -102,6 +102,10 @@ export async function getReported(project_id) {
   return await fetch('/api/project/reported', { params: { project_id } })
 }
 
+export async function exchangeCharge() {
+  return await fetch('/api/shop/charge', {}, 'post')
+}
+
 export async function getShopItems() {
   return await fetch('/api/shop/items')
 }

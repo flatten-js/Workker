@@ -8,7 +8,7 @@ const { router_handler } = require('##/utils.js')
 
 router.get('/get', authenticate, router_handler(async (req, res) => {
   const user = await User.findOne({ where: { id: req.decoded.user_id } })
-	return res.json({ ticket: user.ticket })
+	return res.json({ ticket: user.ticket, charge: user.charge })
 }))
 
 module.exports = router

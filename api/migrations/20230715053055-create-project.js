@@ -24,15 +24,14 @@ module.exports = {
         allowNull: false,
         type: Sequelize.INTEGER
       },
+      charge: {
+        allowNull: false,
+        type: Sequelize.FLOAT
+      },
       public: {
         allowNull: false,
         type: Sequelize.BOOLEAN,
         defaultValue: false
-      },
-      ticket: {
-        allowNull: false,
-        type: Sequelize.INTEGER,
-        defaultValue: 0
       },
       distance: {
         allowNull: false,

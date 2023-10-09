@@ -26,6 +26,11 @@ module.exports = {
         type: Sequelize.INTEGER,
         defaultValue: 0
       },
+      charge: {
+        allowNull: false,
+        type: Sequelize.FLOAT,
+        defaultValue: 1
+      },
       verified_at: {
         type: Sequelize.DATE
       },

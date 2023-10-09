@@ -69,7 +69,7 @@ function NFT() {
                     &nbsp;
                   </Skeleton>
                   <Skeleton sx={{ 
-                    width: '60%', 
+                    width: '75%', 
                     maxWidth: 'none',
                     transform: 'none',
                     fontSize: theme => theme.typography.h5.fontSize
