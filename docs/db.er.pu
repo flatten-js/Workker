@@ -72,6 +72,7 @@ entity packages {
   * <<PK>> id : integer
   --
   * name : string
+  * bucket : string
   * contract_address : string
   * ticket : integer
   disabled : bool = true

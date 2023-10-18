@@ -13,6 +13,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING
       },
+      bucket: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
       contract_address: {
         allowNull: false,
         type: Sequelize.STRING

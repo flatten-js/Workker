@@ -29,6 +29,7 @@ services:
     volumes:
       - ./api:/usr/local/src
       - api_node_modules:/usr/local/src/node_modules
+      - ~/.aws/credentials:/root/.aws/credentials
     depends_on:
       mysql:
         condition: service_healthy

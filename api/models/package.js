@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Package.init({
     name: DataTypes.STRING,
+    bucket: DataTypes.STRING,
     contract_address: DataTypes.STRING,
     ticket: DataTypes.INTEGER,
     disabled: DataTypes.BOOLEAN,

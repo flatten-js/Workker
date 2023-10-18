@@ -11,21 +11,29 @@ const {
   NFT_OWNER_PRIVATE_KEY,
   NFT_STORAGE_PATH,
   METADATA_PUBLIC_KEY,
-  METADATA_PRIVATE_KEY,
-  METADATA_PATH
+  METADATA_PRIVATE_KEY
 } = require('##/config.js')
 const { Nft, Package, PackageNft } = require('###/models')
+const s3 = require('##/stores/aws/s3.js')
 
 const abi = require('./abi.json')
 
 const web3 = new Web3(new Web3.providers.HttpProvider(NFT_PROVIDER))
 
-function metadata_path(token_id) {
-  return path.join(NFT_STORAGE_PATH, ''+token_id)
+function storage_url(bucket) {
+  return NFT_STORAGE_PATH.replace('{bucket}', bucket)
 }
 
-async function upload_metadata(token_id, metadata) {
-  await fs.writeFile(metadata_path(token_id), JSON.stringify(metadata))
+function image_url(bucket, image) {
+  return path.join(storage_url(bucket), `nfts/${image}.png`)
+}
+
+function metadata_path(token_id) {
+  return `metadata/${token_id}`
+}
+
+async function upload_metadata(bucket, token_id, metadata) {
+  await s3.upload(bucket, metadata_path(token_id), JSON.stringify(metadata))
 }
 
 function pickup_nft(nfts) {
@@ -44,7 +52,7 @@ async function create_metadata(package, nft, token_id, max_token) {
   const metadata = { 
     name: `${nft.name} #${token_serialize(token_id, max_token)}`, 
     description: nft.description, 
-    image: METADATA_PATH.replace('{package}', package.name).replace('{image}', `${nft.name}.png`)
+    image: image_url(package.bucket, nft.name)
   }
 
   const encrypt_metadata = crypto.publicEncrypt(
@@ -81,14 +89,13 @@ async function mint(package, contract) {
   const token_id = web3.utils.hexToNumber(logs[0].topics[3])
 
   const metadata = await create_metadata(package, nft, token_id, "99999")
-  await upload_metadata(token_id, metadata)
+  await upload_metadata(package.bucket, token_id, metadata)
   
   return token_id
 }
 
 async function reveal(package, contract, token_id) {
-  const token_uri = metadata_path(token_id)
-  const data = await fs.readFile(token_uri)
+  const data = await s3.get(package.bucket, metadata_path(token_id))
 
   const metadata = crypto.privateDecrypt(
     {
@@ -100,7 +107,7 @@ async function reveal(package, contract, token_id) {
   )
 
   const result = await call_ownable_method(contract, 'reveal', token_id)
-  await upload_metadata(token_id, JSON.parse(metadata.toString()))
+  await upload_metadata(package.bucket, token_id, JSON.parse(metadata.toString()))
 
   return result
 }
