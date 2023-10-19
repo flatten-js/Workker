@@ -73,9 +73,8 @@ export async function createStamp(marker_id, position) {
   return await fetch('/api/stamp/add', { marker_id, position }, 'post')
 }
 
-export async function getOwnNFTs(id) {
-  const params = id ? { params: { token_id: id } } : {}
-  return await fetch('/api/nft/own', params)
+export async function getOwnNFTs(package_id, token_id) {
+  return await fetch('/api/nft/own', { params: { package_id, token_id } })
 }
 
 export async function reveal(package_id, token_id) {

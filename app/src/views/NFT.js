@@ -17,7 +17,7 @@ import { ListItemDetail, Accordion } from "@@/components"
 import { getOwnNFTs } from '@@/store'
 
 function NFT() {
-  const { id } = useParams() 
+  const { package_id, token_id } = useParams() 
 
   const [nft, setNFT] = useState({})
   const [loading, setLoading] = useState(true)
@@ -27,7 +27,7 @@ function NFT() {
   async function fetch() {
     try {
       setLoading(true)
-      const [nft] = await getOwnNFTs(id)
+      const [nft] = await getOwnNFTs(package_id, token_id)
       if (nft.metadata) {
         setNFT(nft)
       } else {

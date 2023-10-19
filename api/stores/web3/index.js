@@ -1,5 +1,3 @@
-const fs = require('fs').promises
-const path = require('path')
 const crypto = require('crypto')
 
 const axios = require('axios')
@@ -25,7 +23,7 @@ function storage_url(bucket) {
 }
 
 function image_url(bucket, image) {
-  return path.join(storage_url(bucket), `nfts/${image}.png`)
+  return (new URL(`nfts/${image}.png`, storage_url(bucket))).toString()
 }
 
 function metadata_path(token_id) {
@@ -120,9 +118,13 @@ function totalSupply(package_id, contract) {
   return contract.methods.totalSupply().call()
 }
 
-async function own_nfts(user_id, token_id) {
+async function own_nfts(user_id, package_id, token_id) {
   let nfts = await Nft.findAll({ 
-    where: { user_id, ...(token_id ? { token_id } : {}) }, 
+    where: { 
+      user_id,
+      ...(package_id && { package_id }),
+      ...(token_id && { token_id })
+    }, 
     include: { 
       model: Package, 
       required: true

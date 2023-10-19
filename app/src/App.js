@@ -29,7 +29,7 @@ function App() {
           <Route path="/shop" element={ <Shop /> } />
           <Route path="/exchange" element={ <Exchange /> } />
           <Route path="/nfts" element={ <NFTs /> } />
-          <Route path="/nfts/:id" element={ <NFT /> } />
+          <Route path="/nfts/:package_id/:token_id" element={ <NFT /> } />
           <Route path="/account" element={ <Account /> } />
           <Route path="/:id" element={ <Project /> } />
         </Route>

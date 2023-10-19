@@ -54,8 +54,8 @@ function NFTs() {
     await updateNFTs()
   }
 
-  function toNFT(id) {
-    navigate(`/nfts/${id}`)
+  function toNFT(package_id, token_id) {
+    navigate(`/nfts/${package_id}/${token_id}`)
   }
   
   return (
@@ -71,7 +71,7 @@ function NFTs() {
                   metadata={ nft.metadata }
                   onReveal={ () => onRevealHandler(nft) }
                   revealing={ revealing }
-                  onClick={ () => toNFT(nft.id) }
+                  onClick={ () => toNFT(nft.package_id, nft.token_id) }
                   loaded
                 />
               </Grid>
