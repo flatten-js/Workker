@@ -30,6 +30,7 @@ router.post('/', authenticate, router_handler(async (req, res) => {
 router.get('/packages', authenticate, router_handler(async (req, res) => {
   let packages = await Package.findAll({ where: { disabled: false } })
   packages = await Promise.all(packages.map(async package => {
+    const image = web3.package_url(package.bucket)
     let supply = {}
     try {
       supply.max = ''+(await web3.contract.call(package.id, 'maxSupply'))
@@ -38,7 +39,7 @@ router.get('/packages', authenticate, router_handler(async (req, res) => {
       console.error(e)
       supply = {}
     }
-    return { ...package.toJSON(), supply }
+    return { ...package.toJSON(), image, supply }
   }))
   res.json(packages)
 }))

@@ -22,6 +22,10 @@ function storage_url(bucket) {
   return NFT_STORAGE_PATH.replace('{bucket}', bucket)
 }
 
+function package_url(bucket) {
+  return (new URL('package.png', storage_url(bucket))).toString()
+}
+
 function image_url(bucket, image) {
   return (new URL(`nfts/${image}.png`, storage_url(bucket))).toString()
 }
@@ -164,6 +168,7 @@ async function call(package_id, method, ...args) {
 }
 
 module.exports = {
+  package_url,
   create_metadata, 
   call_ownable_method,
   own_nfts,

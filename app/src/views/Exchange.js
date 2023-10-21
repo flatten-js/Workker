@@ -62,20 +62,21 @@ function Exchange() {
           </Typography>
         </Grid>
 
-        <Grid container item>
+        <Grid container item sx={{ gap: '1rem' }}>
           {
             packages.length
             ? (
               packages.map(_package => (
                 <Grid item xs={12} sm={6} md={4}>
-                  <Paper sx={{ p: 4, mb: 4 }} key={ _package.id }>
+                  <Paper sx={{ p: 4 }} key={ _package.id }>
                     <Package 
                       name={ _package.name }
                       description={ _package.description }
+                      image={ _package.image }
                       ticket={ _package.ticket }
                       max={ _package.supply.max }
                       value={ _package.supply.total }
-                      disabled={ !user.ticket }
+                      disabled={ user.ticket < _package.ticket }
                       onExchange={ () => exchange(_package.id) }
                       loading={ exchanging }
                       loaded

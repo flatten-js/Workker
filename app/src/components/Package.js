@@ -1,10 +1,11 @@
-import { Box, Stack, Typography, Button, Skeleton } from '@mui/material'
+import { Box, Stack, Typography, Button, Skeleton, CardMedia } from '@mui/material'
 
 import { Progress } from '@@/components'
 
 function Package(props) {
   const name = props.name
   const description = props.description || 'There is no description in this package'
+  const image = props.image
   const ticket = props.ticket
   const max = parseInt(props.max) || 0
   const value = max - (parseInt(props.value) || 0)
@@ -45,17 +46,22 @@ function Package(props) {
           }
       </Box>
       
-      <Box sx={{ mb: 6 }}>
+      <Box sx={{ mb: 4 }}>
         {
           loaded
           ? (
             <>
+              <CardMedia 
+                image={ image }
+                sx={{ mb: 2, aspectRatio: '1/1' }}
+              />
               <Typography variant="h6" component="div">{ name }</Typography>
               <Typography variant="body2" color="gray">{ description }</Typography>
             </>
           )
           : (
             <>
+              <Skeleton variant="rectangular" sx={{  mb: 2, width: '100%', height: 'auto', aspectRatio: '1/1' }} />
               <Skeleton sx={{ width: '60%', fontSize: theme => theme.typography.h6.fontSize}} />
               <Skeleton sx={{ width: '80%', fontSize: theme => theme.typography.body2.fontSize }} />
             </>
