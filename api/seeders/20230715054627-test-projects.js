@@ -14,7 +14,8 @@ module.exports = {
     */
     await queryInterface.bulkInsert('projects', [
       { id: 1, user_id: 1, title: '[Public] Test', radius: 20, charge: 1, public: true },
-      { id: 2, user_id: 1, title: '[Private] Test', radius: 20, charge: 1, public: false }
+      { id: 2, user_id: 1, title: '[Private] Test', radius: 20, charge: 1, public: false },
+      { id: 3, user_id: 1, title: '[Private] Test2', radius: 20, charge: 1, public: false }
     ])
   },
 

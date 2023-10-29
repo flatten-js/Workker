@@ -22,7 +22,7 @@ router.get('/all', authenticate, router_handler(async (req, res) => {
 	
 	const projects = await Project.findAll({ 
 		where: { public: true }, 
-		order: [['updatedAt', 'DESC']], 
+		order: [['updated_at', 'DESC']], 
 		limit: LIMIT,
 		offset: (page - 1) * LIMIT
 	})
@@ -44,7 +44,7 @@ router.get('/all/my', authenticate, router_handler(async (req, res) => {
 			user_id: req.decoded.user_id,
 			...(_public != void 0 ? { public: JSON.parse(_public) } : {})
 		}, 
-		order: [['updatedAt', 'DESC']] 
+		order: [['updated_at', 'DESC']] 
 	})
 
 	return res.json(projects)
@@ -52,10 +52,20 @@ router.get('/all/my', authenticate, router_handler(async (req, res) => {
 
 router.get('/all/trying', authenticate, router_handler(async (req, res) => {
 	const { user_id } = req.decoded
+	const { type } = req.query
+
+	const options = {}
+	switch (type) {
+		case 'home':
+			options.limit = 5
+	}
 	
 	const models = await Stamp.findAll({
 		attributes: [],
-		where: { user_id },
+		where: { 
+			user_id, 
+			'$Marker.Project.ProjectReports.project_id$': null 
+		},
 		include: [
 			{
 				model: Marker,
@@ -63,25 +73,27 @@ router.get('/all/trying', authenticate, router_handler(async (req, res) => {
 				include: [
 					{ 
 						model: Project,
-						paranoid: false
+						paranoid: false,
+						include: [
+							{
+								model: ProjectReport,
+								required: false,
+								attributes: []
+							}
+						]
 					}
 				]
 			}
 		],
-		group: ['Marker.Project.id'],
+		subQuery: false,
+		group: ['Stamp.updated_at', 'Marker.Project.id'],
+		order: [['updated_at', 'DESC']],
 		nest: true,
-		raw: true
+		raw: true,
+		...options
 	})
 
-	const reports = await ProjectReport.findAll({
-		attributes: ['project_id'],
-		where: { user_id }
-	})
-
-	const projects = models
-		.map(model => model.Marker.Project)
-		.filter(project => reports.every(report => report.project_id != project.id))
-		
+	const projects = models.map(model => model.Marker.Project)		
 	res.json(projects)
 }))
 
@@ -95,7 +107,7 @@ router.get('/all/reported', authenticate, router_handler(async (req, res) => {
 				paranoid: false 
 			}
 		],
-		order: [['updatedAt', 'DESC']],
+		order: [['updated_at', 'DESC']],
 		nest: true,
 		raw: true
 	})

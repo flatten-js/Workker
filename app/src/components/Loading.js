@@ -14,21 +14,20 @@ function Message(props) {
 }
 
 function Loading(props) {
-  const { loading, message, children } = props
-  
+  const { loading, message } = props
   return (
     loading
       ? (
-        children
-      )
+        props.children
+      ) 
       : (
         typeof message == 'string'
-        ? (
-          <Message>{ message }</Message>
-        )
-        : (
-          message(Message)
-        )
+          ? (
+            <Message>{ message }</Message>
+          )
+          : (
+            message(Message)
+          )
       )
   )
 }

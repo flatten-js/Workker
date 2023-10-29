@@ -37,8 +37,8 @@ export async function getProjectMy(params = {}) {
   return await fetch('/api/project/all/my', { params })
 }
 
-export async function getProjectTrying() {
-  return await fetch('/api/project/all/trying')
+export async function getProjectTrying(type = 'all') {
+  return await fetch('/api/project/all/trying', { params: { type } })
 }
 
 export async function getProjectReported() {
